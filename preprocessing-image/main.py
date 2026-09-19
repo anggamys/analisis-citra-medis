@@ -2,9 +2,18 @@
 Main script untuk mendemonstrasikan semua teknik preprocessing.
 """
 
+from pathlib import Path
+
 import cv2
+import matplotlib
+
+matplotlib.use("Agg")
 import matplotlib.pyplot as plt
 import numpy as np
+
+SCRIPT_DIR = Path(__file__).parent
+OUTPUT_DIR = SCRIPT_DIR / "output"
+OUTPUT_DIR.mkdir(exist_ok=True)
 
 from src import (
     clahe,
@@ -15,25 +24,14 @@ from src import (
 )
 
 
-def create_test_image(size: tuple = (256, 256)) -> np.ndarray:
-    """
-    Membuat citra test dengan berbagai intensitas.
-    """
-    x = np.linspace(0, 255, size[1])
-    y = np.linspace(0, 255, size[0])
-    X, Y = np.meshgrid(x, y)
+def plot_histograms(images, titles, filename, figsize=(15, 10)):
+    """Plot citra beserta histogramnya.
 
-    image = np.uint8((X + Y) / 2)
-
-    noise = np.random.normal(0, 25, size)
-    image = np.clip(image + noise, 0, 255).astype(np.uint8)
-
-    return image
-
-
-def plot_histograms(images, titles, figsize=(15, 10)):
-    """
-    Memplot histogram untuk beberapa citra.
+    Args:
+        images  : list of np.ndarray - daftar citra grayscale
+        titles  : list of str       - judul untuk setiap citra
+        filename: str               - nama file output
+        figsize : tuple             - ukuran figure (default: (15, 10))
     """
     n_images = len(images)
     _, axes = plt.subplots(2, n_images, figsize=figsize)
@@ -49,12 +47,20 @@ def plot_histograms(images, titles, figsize=(15, 10)):
         axes[1, i].set_xlim([0, 256])
 
     plt.tight_layout()
-    plt.savefig("histograms_comparison.png", dpi=150, bbox_inches="tight")
-    plt.show()
+    plt.savefig(OUTPUT_DIR / filename, dpi=150, bbox_inches="tight")
+    plt.close()
 
 
 def demonstrate_histogram_equalization(image):
-    print("=== Histogram Equalization ===")
+    """Histogram Equalization - menyebar distribusi intensitas agar kontras lebih merata.
+
+    Args:
+        image: np.ndarray - citra grayscale uint8
+
+    Returns:
+        np.ndarray - citra hasil HE
+    """
+    print("Histogram Equalization")
 
     he_result = histogram_equalization(image)
 
@@ -69,14 +75,22 @@ def demonstrate_histogram_equalization(image):
     axes[1].axis("off")
 
     plt.tight_layout()
-    plt.savefig("histogram_equalization.png", dpi=150, bbox_inches="tight")
-    plt.show()
+    plt.savefig(OUTPUT_DIR / "histogram_equalization.png", dpi=150, bbox_inches="tight")
+    plt.close()
 
     return he_result
 
 
 def demonstrate_clahe(image):
-    print("=== CLAHE ===")
+    """CLAHE - HE lokal dengan batas clipping untuk hindari noise berlebih.
+
+    Args:
+        image: np.ndarray - citra grayscale uint8
+
+    Returns:
+        dict - {"clip_1.0": np.ndarray, "clip_2.0": np.ndarray, "clip_4.0": np.ndarray}
+    """
+    print("CLAHE")
 
     clip_limits = [1.0, 2.0, 4.0]
     results = {}
@@ -96,14 +110,24 @@ def demonstrate_clahe(image):
         axes[i + 1].axis("off")
 
     plt.tight_layout()
-    plt.savefig("clahe_comparison.png", dpi=150, bbox_inches="tight")
-    plt.show()
+    plt.savefig(OUTPUT_DIR / "clahe_comparison.png", dpi=150, bbox_inches="tight")
+    plt.close()
 
     return results
 
 
 def demonstrate_gamma_correction(image):
-    print("=== Gamma Correction ===")
+    """Gamma Correction - transformasi power-law untuk brighten/darken citra.
+
+    Gamma < 1 = lebih terang, gamma > 1 = lebih gelap.
+
+    Args:
+        image: np.ndarray - citra grayscale uint8
+
+    Returns:
+        dict - {"gamma_0.5": np.ndarray, "gamma_1.0": np.ndarray, "gamma_2.0": np.ndarray}
+    """
+    print("Gamma Correction")
 
     gamma_values = [0.5, 1.0, 2.0]
     results = {}
@@ -123,14 +147,22 @@ def demonstrate_gamma_correction(image):
         axes[i + 1].axis("off")
 
     plt.tight_layout()
-    plt.savefig("gamma_correction.png", dpi=150, bbox_inches="tight")
-    plt.show()
+    plt.savefig(OUTPUT_DIR / "gamma_correction.png", dpi=150, bbox_inches="tight")
+    plt.close()
 
     return results
 
 
 def demonstrate_median_filter(image):
-    print("=== Median Filter ===")
+    """Median Filter - reduksi noise salt-and-pepper dengan ambil median tetangga.
+
+    Args:
+        image: np.ndarray - citra grayscale uint8
+
+    Returns:
+        dict - {"kernel_3": np.ndarray, "kernel_5": np.ndarray, "kernel_7": np.ndarray}
+    """
+    print("Median Filter")
 
     kernel_sizes = [3, 5, 7]
     results = {}
@@ -150,14 +182,22 @@ def demonstrate_median_filter(image):
         axes[i + 1].axis("off")
 
     plt.tight_layout()
-    plt.savefig("median_filter.png", dpi=150, bbox_inches="tight")
-    plt.show()
+    plt.savefig(OUTPUT_DIR / "median_filter.png", dpi=150, bbox_inches="tight")
+    plt.close()
 
     return results
 
 
 def demonstrate_gaussian_filter(image):
-    print("=== Gaussian Filter ===")
+    """Gaussian Filter - penghalusan citra dengan konvolusi Gaussian kernel.
+
+    Args:
+        image: np.ndarray - citra grayscale uint8
+
+    Returns:
+        dict - {"kernel_3x3": np.ndarray, "kernel_5x5": np.ndarray, "kernel_7x7": np.ndarray}
+    """
+    print("Gaussian Filter")
 
     kernel_sizes = [(3, 3), (5, 5), (7, 7)]
     results = {}
@@ -177,8 +217,8 @@ def demonstrate_gaussian_filter(image):
         axes[i + 1].axis("off")
 
     plt.tight_layout()
-    plt.savefig("gaussian_filter.png", dpi=150, bbox_inches="tight")
-    plt.show()
+    plt.savefig(OUTPUT_DIR / "gaussian_filter.png", dpi=150, bbox_inches="tight")
+    plt.close()
 
     return results
 
@@ -186,10 +226,12 @@ def demonstrate_gaussian_filter(image):
 def main():
     print("Memulai demonstrasi preprocessing citra...")
 
-    image = create_test_image()
-
-    cv2.imwrite("test_image.png", image)
-    print("Citra test disimpan: test_image.png")
+    image_path = SCRIPT_DIR / "data" / "616156.png"
+    image = cv2.imread(str(image_path), cv2.IMREAD_GRAYSCALE)
+    if image is None:
+        print(f"Error: Gagal membaca citra {image_path}")
+        return
+    print(f"Citra berhasil dimuat: {image_path}")
 
     he_result = demonstrate_histogram_equalization(image)
     clahe_results = demonstrate_clahe(image)
@@ -207,10 +249,13 @@ def main():
     }
 
     plot_histograms(
-        images_to_compare.values(), images_to_compare.keys(), figsize=(18, 10)
+        images_to_compare.values(),
+        images_to_compare.keys(),
+        "histograms_comparison.png",
+        figsize=(18, 10),
     )
 
-    print("\nSelesai! Semua hasil telah disimpan.")
+    print(f"\nSelesai! Semua hasil disimpan di: {OUTPUT_DIR}")
 
 
 if __name__ == "__main__":
