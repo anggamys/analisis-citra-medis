@@ -12,6 +12,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 
 SCRIPT_DIR = Path(__file__).parent
+DATA_DIR = SCRIPT_DIR / "data"
 OUTPUT_DIR = SCRIPT_DIR / "output"
 OUTPUT_DIR.mkdir(exist_ok=True)
 
@@ -51,16 +52,17 @@ def plot_histograms(images, titles, filename, figsize=(15, 10)):
     plt.close()
 
 
-def demonstrate_histogram_equalization(image):
+def demonstrate_histogram_equalization(image, name):
     """Histogram Equalization - menyebar distribusi intensitas agar kontras lebih merata.
 
     Args:
         image: np.ndarray - citra grayscale uint8
+        name : str        - nama/identifier citra
 
     Returns:
         np.ndarray - citra hasil HE
     """
-    print("Histogram Equalization")
+    print("  Histogram Equalization")
 
     he_result = histogram_equalization(image)
 
@@ -75,22 +77,23 @@ def demonstrate_histogram_equalization(image):
     axes[1].axis("off")
 
     plt.tight_layout()
-    plt.savefig(OUTPUT_DIR / "histogram_equalization.png", dpi=150, bbox_inches="tight")
+    plt.savefig(OUTPUT_DIR / f"{name}_histogram_equalization.png", dpi=150, bbox_inches="tight")
     plt.close()
 
     return he_result
 
 
-def demonstrate_clahe(image):
+def demonstrate_clahe(image, name):
     """CLAHE - HE lokal dengan batas clipping untuk hindari noise berlebih.
 
     Args:
         image: np.ndarray - citra grayscale uint8
+        name : str        - nama/identifier citra
 
     Returns:
         dict - {"clip_1.0": np.ndarray, "clip_2.0": np.ndarray, "clip_4.0": np.ndarray}
     """
-    print("CLAHE")
+    print("  CLAHE")
 
     clip_limits = [1.0, 2.0, 4.0]
     results = {}
@@ -110,24 +113,25 @@ def demonstrate_clahe(image):
         axes[i + 1].axis("off")
 
     plt.tight_layout()
-    plt.savefig(OUTPUT_DIR / "clahe_comparison.png", dpi=150, bbox_inches="tight")
+    plt.savefig(OUTPUT_DIR / f"{name}_clahe_comparison.png", dpi=150, bbox_inches="tight")
     plt.close()
 
     return results
 
 
-def demonstrate_gamma_correction(image):
+def demonstrate_gamma_correction(image, name):
     """Gamma Correction - transformasi power-law untuk brighten/darken citra.
 
     Gamma < 1 = lebih terang, gamma > 1 = lebih gelap.
 
     Args:
         image: np.ndarray - citra grayscale uint8
+        name : str        - nama/identifier citra
 
     Returns:
         dict - {"gamma_0.5": np.ndarray, "gamma_1.0": np.ndarray, "gamma_2.0": np.ndarray}
     """
-    print("Gamma Correction")
+    print("  Gamma Correction")
 
     gamma_values = [0.5, 1.0, 2.0]
     results = {}
@@ -147,22 +151,23 @@ def demonstrate_gamma_correction(image):
         axes[i + 1].axis("off")
 
     plt.tight_layout()
-    plt.savefig(OUTPUT_DIR / "gamma_correction.png", dpi=150, bbox_inches="tight")
+    plt.savefig(OUTPUT_DIR / f"{name}_gamma_correction.png", dpi=150, bbox_inches="tight")
     plt.close()
 
     return results
 
 
-def demonstrate_median_filter(image):
+def demonstrate_median_filter(image, name):
     """Median Filter - reduksi noise salt-and-pepper dengan ambil median tetangga.
 
     Args:
         image: np.ndarray - citra grayscale uint8
+        name : str        - nama/identifier citra
 
     Returns:
         dict - {"kernel_3": np.ndarray, "kernel_5": np.ndarray, "kernel_7": np.ndarray}
     """
-    print("Median Filter")
+    print("  Median Filter")
 
     kernel_sizes = [3, 5, 7]
     results = {}
@@ -182,22 +187,23 @@ def demonstrate_median_filter(image):
         axes[i + 1].axis("off")
 
     plt.tight_layout()
-    plt.savefig(OUTPUT_DIR / "median_filter.png", dpi=150, bbox_inches="tight")
+    plt.savefig(OUTPUT_DIR / f"{name}_median_filter.png", dpi=150, bbox_inches="tight")
     plt.close()
 
     return results
 
 
-def demonstrate_gaussian_filter(image):
+def demonstrate_gaussian_filter(image, name):
     """Gaussian Filter - penghalusan citra dengan konvolusi Gaussian kernel.
 
     Args:
         image: np.ndarray - citra grayscale uint8
+        name : str        - nama/identifier citra
 
     Returns:
         dict - {"kernel_3x3": np.ndarray, "kernel_5x5": np.ndarray, "kernel_7x7": np.ndarray}
     """
-    print("Gaussian Filter")
+    print("  Gaussian Filter")
 
     kernel_sizes = [(3, 3), (5, 5), (7, 7)]
     results = {}
@@ -217,27 +223,31 @@ def demonstrate_gaussian_filter(image):
         axes[i + 1].axis("off")
 
     plt.tight_layout()
-    plt.savefig(OUTPUT_DIR / "gaussian_filter.png", dpi=150, bbox_inches="tight")
+    plt.savefig(OUTPUT_DIR / f"{name}_gaussian_filter.png", dpi=150, bbox_inches="tight")
     plt.close()
 
     return results
 
 
-def main():
-    print("Memulai demonstrasi preprocessing citra...")
+def process_image(image_path):
+    """Proses satu citra dengan semua teknik preprocessing.
 
-    image_path = SCRIPT_DIR / "data" / "616156.png"
+    Args:
+        image_path: Path - path ke file citra
+    """
+    name = image_path.stem
+    print(f"\n[{name}]")
+
     image = cv2.imread(str(image_path), cv2.IMREAD_GRAYSCALE)
     if image is None:
-        print(f"Error: Gagal membaca citra {image_path}")
+        print(f"  Error: Gagal membaca citra {image_path}")
         return
-    print(f"Citra berhasil dimuat: {image_path}")
 
-    he_result = demonstrate_histogram_equalization(image)
-    clahe_results = demonstrate_clahe(image)
-    gamma_results = demonstrate_gamma_correction(image)
-    median_results = demonstrate_median_filter(image)
-    gaussian_results = demonstrate_gaussian_filter(image)
+    he_result = demonstrate_histogram_equalization(image, name)
+    clahe_results = demonstrate_clahe(image, name)
+    gamma_results = demonstrate_gamma_correction(image, name)
+    median_results = demonstrate_median_filter(image, name)
+    gaussian_results = demonstrate_gaussian_filter(image, name)
 
     images_to_compare = {
         "Asli": image,
@@ -251,9 +261,26 @@ def main():
     plot_histograms(
         images_to_compare.values(),
         images_to_compare.keys(),
-        "histograms_comparison.png",
+        f"{name}_histograms_comparison.png",
         figsize=(18, 10),
     )
+
+
+def main():
+    print("Memulai demonstrasi preprocessing citra...")
+
+    image_paths = sorted(
+        p for p in DATA_DIR.iterdir()
+        if p.suffix.lower() in {".png", ".jpg", ".jpeg"}
+    )
+    if not image_paths:
+        print(f"Tidak ditemukan citra .png di {DATA_DIR}")
+        return
+
+    print(f"Ditemukan {len(image_paths)} citra")
+
+    for image_path in image_paths:
+        process_image(image_path)
 
     print(f"\nSelesai! Semua hasil disimpan di: {OUTPUT_DIR}")
 
