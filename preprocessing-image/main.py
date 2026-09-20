@@ -77,7 +77,9 @@ def demonstrate_histogram_equalization(image, name):
     axes[1].axis("off")
 
     plt.tight_layout()
-    plt.savefig(OUTPUT_DIR / f"{name}_histogram_equalization.png", dpi=150, bbox_inches="tight")
+    plt.savefig(
+        OUTPUT_DIR / f"{name}_histogram_equalization.png", dpi=150, bbox_inches="tight"
+    )
     plt.close()
 
     return he_result
@@ -113,7 +115,9 @@ def demonstrate_clahe(image, name):
         axes[i + 1].axis("off")
 
     plt.tight_layout()
-    plt.savefig(OUTPUT_DIR / f"{name}_clahe_comparison.png", dpi=150, bbox_inches="tight")
+    plt.savefig(
+        OUTPUT_DIR / f"{name}_clahe_comparison.png", dpi=150, bbox_inches="tight"
+    )
     plt.close()
 
     return results
@@ -151,7 +155,9 @@ def demonstrate_gamma_correction(image, name):
         axes[i + 1].axis("off")
 
     plt.tight_layout()
-    plt.savefig(OUTPUT_DIR / f"{name}_gamma_correction.png", dpi=150, bbox_inches="tight")
+    plt.savefig(
+        OUTPUT_DIR / f"{name}_gamma_correction.png", dpi=150, bbox_inches="tight"
+    )
     plt.close()
 
     return results
@@ -223,7 +229,9 @@ def demonstrate_gaussian_filter(image, name):
         axes[i + 1].axis("off")
 
     plt.tight_layout()
-    plt.savefig(OUTPUT_DIR / f"{name}_gaussian_filter.png", dpi=150, bbox_inches="tight")
+    plt.savefig(
+        OUTPUT_DIR / f"{name}_gaussian_filter.png", dpi=150, bbox_inches="tight"
+    )
     plt.close()
 
     return results
@@ -270,8 +278,7 @@ def main():
     print("Memulai demonstrasi preprocessing citra...")
 
     image_paths = sorted(
-        p for p in DATA_DIR.iterdir()
-        if p.suffix.lower() in {".png", ".jpg", ".jpeg"}
+        p for p in DATA_DIR.iterdir() if p.suffix.lower() in {".png", ".jpg", ".jpeg"}
     )
     if not image_paths:
         print(f"Tidak ditemukan citra .png di {DATA_DIR}")
