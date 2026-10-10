@@ -1,45 +1,53 @@
-# Preprocessing Citra Medis
+# Preprocessing Citra X-ray Lutut
 
-Implementasi teknik preprocessing citra untuk analisis citra medis.
+## Kasus
 
-## Struktur Folder
+7 citra X-ray sendi lutut grayscale di `data/` (`0.jpg`, `2.jpg`, `3.jpg`, `4.jpeg`, `5.png`, `6.jpg`, `7.png`).
+
+Masalah pada citra mentah:
+
+- Kontras rendah, rentang intensitas menumpuk — batas tulang dan celah sendi (femur–tibia) kurang tegas.
+- Detail trabekula / tepi tulang samar.
+- Noise yang mengganggu saat kontras dinaikkan.
+
+Tujuan: bandingkan 5 teknik enhancement + denoising untuk melihat mana yang paling memperjelas struktur tulang sebelum analisis lanjut.
+
+## Metode vs masalah
+
+| Teknik | Parameter diuji | Menjawab masalah |
+|--------|-----------------|------------------|
+| Histogram Equalization | — | Meratakan sebaran intensitas global |
+| CLAHE | clip 1.0, 2.0, 4.0 | Peningkatan kontras lokal tanpa over-amplify noise |
+| Gamma Correction | γ 0.5, 1.0, 2.0 | Koreksi kecerahan (γ<1 mencerahkan, γ>1 menggelapkan) |
+| Median Filter | kernel 3, 5, 7 | Reduksi noise salt-and-pepper, jaga tepi |
+| Gaussian Filter | kernel 3×3, 5×5, 7×7 | Penghalusan noise umum |
+
+## Output
+
+Per citra input menghasilkan 6 file di `output/`:
 
 ```
-preprocessing-image/
-├── data/
-│   └── 616156.png
-├── output/
-│   ├── clahe_comparison.png
-│   ├── gamma_correction.png
-│   ├── gaussian_filter.png
-│   ├── histogram_equalization.png
-│   ├── histograms_comparison.png
-│   └── median_filter.png
-├── src/
-│   ├── __init__.py
-│   ├── histogram_equalization.py
-│   ├── clahe.py
-│   ├── gamma_correction.py
-│   ├── median_filter.py
-│   └── gaussian_filter.py
-├── main.py
-├── requirements.txt
-└── README.md
+{nama}_histogram_equalization.png
+{nama}_clahe_comparison.png
+{nama}_gamma_correction.png
+{nama}_median_filter.png
+{nama}_gaussian_filter.png
+{nama}_histograms_comparison.png
 ```
 
-## Penggunaan
+Contoh: `5.png` → `5_clahe_comparison.png`, dst.
+
+## Cara jalan
 
 ```bash
-# Install dependencies
+# dari root repo
 pip install -r requirements.txt
-
-# Jalankan demonstrasi
-python main.py
+python preprocessing-image/main.py
 ```
 
-Semua hasil plot disimpan di folder `output/`.
+Script memindai semua `.png/.jpg/.jpeg` di `data/`, memproses satu per satu, menyimpan plot dengan backend `Agg` (tanpa display).
 
-## Import sebagai Modul
+## Import sebagai modul
 
 ```python
 from src import (
@@ -47,16 +55,6 @@ from src import (
     clahe,
     gamma_correction,
     median_filter,
-    gaussian_filter
+    gaussian_filter,
 )
 ```
-
-## Teknik Preprocessing
-
-| Teknik | Fungsi | Deskripsi |
-|--------|--------|-----------|
-| Histogram Equalization | `histogram_equalization(image)` | Menyebar distribusi intensitas agar kontras lebih merata |
-| CLAHE | `clahe(image, clip_limit, tile_grid_size)` | HE lokal dengan batas clipping untuk hindari noise berlebih |
-| Gamma Correction | `gamma_correction(image, gamma, c)` | Transformasi power-law untuk brighten/darken citra |
-| Median Filter | `median_filter(image, kernel_size)` | Reduksi noise salt-and-pepper dengan ambil median tetangga |
-| Gaussian Filter | `gaussian_filter(image, kernel_size, sigma)` | Penghalusan citra dengan konvolusi Gaussian kernel |
