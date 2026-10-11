@@ -1,13 +1,13 @@
-from .histogram_equalization import histogram_equalization
 from .clahe import clahe
 from .gamma_correction import gamma_correction
-from .median_filter import median_filter
 from .gaussian_filter import gaussian_filter
+from .histogram_equalization import histogram_equalization
+from .median_filter import median_filter
 
 __all__ = [
-    'histogram_equalization',
-    'clahe',
-    'gamma_correction',
-    'median_filter',
-    'gaussian_filter'
+    "clahe",
+    "gamma_correction",
+    "gaussian_filter",
+    "histogram_equalization",
+    "median_filter",
 ]
