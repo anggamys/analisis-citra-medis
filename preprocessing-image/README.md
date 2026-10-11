@@ -47,6 +47,22 @@ python preprocessing-image/main.py
 
 Script memindai semua `.png/.jpg/.jpeg` di `data/`, memproses satu per satu, menyimpan plot dengan backend `Agg` (tanpa display).
 
+## Soal 2: Enhancement citra infected + perbandingan kuantitatif
+
+Script `soal2.py` memakai 3 citra unik pertama dari `dataset/infected/`
+(`Image_001.jpg`, `Image_003.jpg`, `Image_005.jpg` — file dataset berpasangan
+duplikat: 001=002, 003=004, dst., jadi dipilih yang unik).
+
+Metode: HE, CLAHE (clip 2.0), Gamma Correction (0.5/1.0/2.0).
+Metrik per citra per metode: mean, std (kontras RMS), entropi histogram.
+
+```bash
+.venv/bin/python preprocessing-image/soal2.py
+```
+
+Output di `output/soal2/`: `{nama}_before_after.png` (citra + histogram),
+`comparison_all.png` (ringkasan), `metrics.csv` (18 baris).
+
 ## Import sebagai modul
 
 ```python
