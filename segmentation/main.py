@@ -100,7 +100,7 @@ def demonstrate_thresholding(image, name):
 def demonstrate_growing(image, name):
     """Growing (Region Growing) - tumbuhkan region dari seed selama mirip intensitas.
 
-    Varian: thresh 20, 40, 60 (seed otomatis piksel terang + blur 5x5).
+    Varian: thresh 20, 40, 60 (seed otomatis terang+homogen, tepi & saturasi dikecualikan).
 
     Args:
         image: np.ndarray - citra grayscale uint8

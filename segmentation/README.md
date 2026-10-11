@@ -15,7 +15,7 @@ analisis lanjut. Tantangan: speckle noise USG dan artefak garis tepi citra.
 | Spreadsheet | Modul | Parameter diuji |
 |-------------|-------|-----------------|
 | Thresholding | `thresholding.py` | Otsu, fixed=127, adaptive-Gaussian |
-| Growing | `growing.py` (region growing) | thresh 20, 40, 60 (seed piksel terang + blur 5×5) |
+| Growing | `growing.py` (region growing) | thresh 20, 40, 60 (seed terang+homogen, tepi & saturasi dikecualikan) |
 | Clustering (K-Means) | `clustering_kmeans.py` | k=2, 3, 4 |
 | Clustering (FCM) | `clustering_fcm.py` (fuzzy c-means) | c=2, 3, 4 (m=2.0, seed fixed) |
 | Watershed | `watershed.py` | dist_ratio 0.5, 0.7 |
