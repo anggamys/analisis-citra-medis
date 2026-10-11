@@ -1,13 +1,15 @@
-from .active_contour import active_contour_seg
-from .kmeans import kmeans_segmentation
-from .region_growing import region_growing
+from .clustering_fcm import clustering_fcm
+from .clustering_kmeans import clustering_kmeans
+from .growing import growing_segmentation
+from .snakes import snakes_segmentation
 from .thresholding import thresholding
 from .watershed import watershed_segmentation
 
 __all__ = [
-    "active_contour_seg",
-    "kmeans_segmentation",
-    "region_growing",
+    "clustering_fcm",
+    "clustering_kmeans",
+    "growing_segmentation",
+    "snakes_segmentation",
     "thresholding",
     "watershed_segmentation",
 ]

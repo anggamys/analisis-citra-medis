@@ -1,5 +1,5 @@
 """
-Active Contour (Snakes) untuk segmentasi berbasis energi kontur.
+Snakes (Active Contour) untuk segmentasi berbasis energi kontur.
 
 Energi: E = E_internal (alpha, beta) + E_external (w_line, w_edge)
 Kontur awal lingkaran otomatis di tengah citra.
@@ -11,7 +11,7 @@ import cv2
 import numpy as np
 
 
-def active_contour_seg(
+def snakes_segmentation(
     image: np.ndarray,
     alpha: float = 0.015,
     beta: float = 10.0,
@@ -63,7 +63,7 @@ if __name__ == "__main__":
     import sys
 
     if len(sys.argv) < 2:
-        print("Usage: python active_contour.py <image_path>")
+        print("Usage: python snakes.py <image_path>")
         sys.exit(1)
 
     image = cv2.imread(sys.argv[1], cv2.IMREAD_GRAYSCALE)
@@ -74,8 +74,8 @@ if __name__ == "__main__":
     from skimage.draw import polygon2mask
 
     for alpha, beta in [(0.015, 10.0), (0.05, 5.0), (0.01, 20.0)]:
-        snake = active_contour_seg(image, alpha=alpha, beta=beta)
+        snake = snakes_segmentation(image, alpha=alpha, beta=beta)
         mask = (polygon2mask(image.shape, snake) * 255).astype(np.uint8)
-        filename = f"hasil_snake_a{alpha}_b{beta}.png"
+        filename = f"hasil_snakes_a{alpha}_b{beta}.png"
         cv2.imwrite(filename, mask)
         print(f"Disimpan: {filename}")

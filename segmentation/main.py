@@ -11,14 +11,18 @@ matplotlib.use("Agg")
 import matplotlib.pyplot as plt
 
 SCRIPT_DIR = Path(__file__).parent
-DATA_DIR = SCRIPT_DIR.parent / "preprocessing-image" / "data"
+DATA_DIR = SCRIPT_DIR.parent / "dataset" / "infected"
 OUTPUT_DIR = SCRIPT_DIR / "output"
 OUTPUT_DIR.mkdir(exist_ok=True)
 
+# Sama dengan Soal 2: 3 citra unik pertama (file dataset berpasangan duplikat)
+SAMPLES = ["Image_001.jpg", "Image_003.jpg", "Image_005.jpg"]
+
 from src import (
-    active_contour_seg,
-    kmeans_segmentation,
-    region_growing,
+    clustering_fcm,
+    clustering_kmeans,
+    growing_segmentation,
+    snakes_segmentation,
     thresholding,
     watershed_segmentation,
 )
@@ -93,21 +97,21 @@ def demonstrate_thresholding(image, name):
     return variants
 
 
-def demonstrate_region_growing(image, name):
-    """Region Growing - tumbuhkan region dari seed selama mirip intensitas.
+def demonstrate_growing(image, name):
+    """Growing (Region Growing) - tumbuhkan region dari seed selama mirip intensitas.
 
-    Varian: thresh 5, 10, 20 (seed otomatis di tengah citra).
+    Varian: thresh 20, 40, 60 (seed otomatis piksel terang + blur 5x5).
 
     Args:
         image: np.ndarray - citra grayscale uint8
         name : str        - nama/identifier citra
 
     Returns:
-        dict - {"t5": mask, "t10": mask, "t20": mask}
+        dict - {"t20": mask, "t40": mask, "t60": mask}
     """
-    print("  Region Growing")
+    print("  Growing")
 
-    thresh_values = [5, 10, 20]
+    thresh_values = [20, 40, 60]
     results = {}
 
     _, axes = plt.subplots(1, len(thresh_values) + 1, figsize=(15, 5))
@@ -115,21 +119,21 @@ def demonstrate_region_growing(image, name):
     axes[0].set_title("Citra Asli")
     axes[0].axis("off")
     for i, thresh in enumerate(thresh_values):
-        mask = region_growing(image, thresh=thresh)
+        mask = growing_segmentation(image, thresh=thresh)
         results[f"t{thresh}"] = mask
         axes[i + 1].imshow(mask, cmap="gray")
         axes[i + 1].set_title(f"thresh={thresh}")
         axes[i + 1].axis("off")
 
     plt.tight_layout()
-    plt.savefig(OUTPUT_DIR / f"{name}_region_growing.png", dpi=150, bbox_inches="tight")
+    plt.savefig(OUTPUT_DIR / f"{name}_growing.png", dpi=150, bbox_inches="tight")
     plt.close()
 
     return results
 
 
-def demonstrate_kmeans(image, name):
-    """Clustering K-Means - kelompokkan piksel berdasar intensitas.
+def demonstrate_clustering_kmeans(image, name):
+    """Clustering (K-Means) - kelompokkan piksel berdasar intensitas.
 
     Varian: k=2, 3, 4.
 
@@ -140,7 +144,7 @@ def demonstrate_kmeans(image, name):
     Returns:
         dict - {"k2": label, "k3": label, "k4": label}
     """
-    print("  K-Means")
+    print("  Clustering (K-Means)")
 
     k_values = [2, 3, 4]
     results = {}
@@ -150,14 +154,51 @@ def demonstrate_kmeans(image, name):
     axes[0].set_title("Citra Asli")
     axes[0].axis("off")
     for i, k in enumerate(k_values):
-        labels = kmeans_segmentation(image, k)
+        labels = clustering_kmeans(image, k)
         results[f"k{k}"] = labels
         axes[i + 1].imshow(labels, cmap="jet")
         axes[i + 1].set_title(f"k={k}")
         axes[i + 1].axis("off")
 
     plt.tight_layout()
-    plt.savefig(OUTPUT_DIR / f"{name}_kmeans.png", dpi=150, bbox_inches="tight")
+    plt.savefig(
+        OUTPUT_DIR / f"{name}_clustering_kmeans.png", dpi=150, bbox_inches="tight"
+    )
+    plt.close()
+
+    return results
+
+
+def demonstrate_clustering_fcm(image, name):
+    """Clustering (Fuzzy C-Means) - tiap piksel punya derajat keanggotaan semua cluster.
+
+    Varian: c=2, 3, 4 (m=2.0, seed fixed).
+
+    Args:
+        image: np.ndarray - citra grayscale uint8
+        name : str        - nama/identifier citra
+
+    Returns:
+        dict - {"c2": label, "c3": label, "c4": label}
+    """
+    print("  Clustering (FCM)")
+
+    c_values = [2, 3, 4]
+    results = {}
+
+    _, axes = plt.subplots(1, len(c_values) + 1, figsize=(15, 5))
+    axes[0].imshow(image, cmap="gray")
+    axes[0].set_title("Citra Asli")
+    axes[0].axis("off")
+    for i, c in enumerate(c_values):
+        labels = clustering_fcm(image, c)
+        results[f"c{c}"] = labels
+        axes[i + 1].imshow(labels, cmap="jet")
+        axes[i + 1].set_title(f"c={c}")
+        axes[i + 1].axis("off")
+
+    plt.tight_layout()
+    plt.savefig(OUTPUT_DIR / f"{name}_clustering_fcm.png", dpi=150, bbox_inches="tight")
     plt.close()
 
     return results
@@ -198,8 +239,8 @@ def demonstrate_watershed(image, name):
     return results
 
 
-def demonstrate_active_contour(image, name):
-    """Active Contour (Snakes) - evolusi kontur minimalkan energi.
+def demonstrate_snakes(image, name):
+    """Snakes (Active Contour) - evolusi kontur minimalkan energi.
 
     Varian: 3 set (alpha, beta), init lingkaran otomatis.
 
@@ -210,7 +251,7 @@ def demonstrate_active_contour(image, name):
     Returns:
         dict - {"a.._b..": snake array}
     """
-    print("  Active Contour")
+    print("  Snakes")
 
     results = {}
 
@@ -219,14 +260,14 @@ def demonstrate_active_contour(image, name):
     axes[0].set_title("Citra Asli")
     axes[0].axis("off")
     for i, (alpha, beta) in enumerate(SNAKE_PARAMS):
-        snake = active_contour_seg(image, alpha=alpha, beta=beta)
+        snake = snakes_segmentation(image, alpha=alpha, beta=beta)
         results[f"a{alpha}_b{beta}"] = snake
         axes[i + 1].imshow(_overlay_snake(image, snake))
         axes[i + 1].set_title(f"a={alpha} b={beta}")
         axes[i + 1].axis("off")
 
     plt.tight_layout()
-    plt.savefig(OUTPUT_DIR / f"{name}_active_contour.png", dpi=150, bbox_inches="tight")
+    plt.savefig(OUTPUT_DIR / f"{name}_snakes.png", dpi=150, bbox_inches="tight")
     plt.close()
 
     return results
@@ -243,7 +284,7 @@ def plot_summary(image, name, representatives):
     titles = ["Asli"] + list(representatives.keys())
     panels = [image] + list(representatives.values())
 
-    _, axes = plt.subplots(1, len(panels), figsize=(18, 5))
+    _, axes = plt.subplots(1, len(panels), figsize=(21, 5))
     for ax, title, panel in zip(axes, titles, panels):
         if panel.ndim == 2:
             ax.imshow(panel, cmap="gray")
@@ -272,10 +313,11 @@ def process_image(image_path):
         return
 
     thresh = demonstrate_thresholding(image, name)
-    region = demonstrate_region_growing(image, name)
-    km = demonstrate_kmeans(image, name)
+    growing = demonstrate_growing(image, name)
+    ckm = demonstrate_clustering_kmeans(image, name)
+    cfcm = demonstrate_clustering_fcm(image, name)
     ws = demonstrate_watershed(image, name)
-    snake = demonstrate_active_contour(image, name)
+    snake = demonstrate_snakes(image, name)
 
     default_snake = snake[f"a{SNAKE_PARAMS[0][0]}_b{SNAKE_PARAMS[0][1]}"]
     plot_summary(
@@ -283,8 +325,9 @@ def process_image(image_path):
         name,
         {
             "Thresholding": thresh["Otsu"],
-            "Region": region["t10"],
-            "KMeans": km["k2"],
+            "Growing": growing["t40"],
+            "Clustering (K-Means)": ckm["k2"],
+            "Clustering (FCM)": cfcm["c2"],
             "Watershed": _overlay_boundaries(image, ws["r0.7"]),
             "Snakes": _overlay_snake(image, default_snake),
         },
@@ -294,11 +337,10 @@ def process_image(image_path):
 def main():
     print("Memulai demonstrasi segmentasi citra...")
 
-    image_paths = sorted(
-        p for p in DATA_DIR.iterdir() if p.suffix.lower() in {".png", ".jpg", ".jpeg"}
-    )
-    if not image_paths:
-        print(f"Tidak ditemukan citra di {DATA_DIR}")
+    image_paths = [DATA_DIR / f for f in SAMPLES]
+    missing = [str(p) for p in image_paths if not p.exists()]
+    if missing:
+        print(f"Citra tidak ditemukan: {missing}")
         return
 
     print(f"Ditemukan {len(image_paths)} citra")

@@ -1,5 +1,5 @@
 """
-Clustering K-Means untuk segmentasi citra.
+Clustering (K-Means) untuk segmentasi citra.
 
 Tujuan: min sum_{k} sum_{x in Ck} ||x - mu_k||^2
 
@@ -10,9 +10,7 @@ import cv2
 import numpy as np
 
 
-def kmeans_segmentation(
-    image: np.ndarray, k: int = 2, attempts: int = 10
-) -> np.ndarray:
+def clustering_kmeans(image: np.ndarray, k: int = 2, attempts: int = 10) -> np.ndarray:
     """
     Segmentasi K-Means pada intensitas piksel.
 
@@ -54,7 +52,7 @@ if __name__ == "__main__":
     import sys
 
     if len(sys.argv) < 2:
-        print("Usage: python kmeans.py <image_path>")
+        print("Usage: python clustering_kmeans.py <image_path>")
         sys.exit(1)
 
     image = cv2.imread(sys.argv[1], cv2.IMREAD_GRAYSCALE)
@@ -63,7 +61,7 @@ if __name__ == "__main__":
         sys.exit(1)
 
     for k in [2, 3, 4]:
-        result = kmeans_segmentation(image, k)
-        filename = f"hasil_kmeans_k{k}.png"
+        result = clustering_kmeans(image, k)
+        filename = f"hasil_clustering_kmeans_k{k}.png"
         cv2.imwrite(filename, result)
         print(f"Disimpan: {filename}")

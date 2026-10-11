@@ -12,7 +12,7 @@ all-task-remote/
 │   ├── output/            # hasil per citra (di-ignore git)
 │   └── main.py            # batch semua citra di data/
 ├── segmentation/          # segmentasi tulang lutut (jalan)
-│   ├── src/               # 5 fungsi segmentasi
+│   ├── src/               # 6 fungsi segmentasi
 │   ├── output/            # hasil per citra (di-ignore git)
 │   └── main.py            # batch semua citra di preprocessing-image/data/
 ├── requirements.txt       # dependensi global

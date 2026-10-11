@@ -1,58 +1,64 @@
-# Segmentasi Citra X-ray Lutut
+# Segmentasi Citra USG Infected (Soal 3)
 
 ## Kasus
 
-Citra X-ray sendi lutut grayscale yang sama dengan `preprocessing-image/data/`
-(`0.jpg`, `2.jpg`, `3.jpg`, `4.jpeg`, `5.png`, `6.jpg`, `7.png`).
+3 citra USG unik pertama dari `dataset/infected/` — sama dengan Soal 2
+(`Image_001.jpg`, `Image_003.jpg`, `Image_005.jpg`; file dataset berpasangan
+duplikat: 001=002, 003=004, dst.).
 
-Masalah: pisahkan struktur tulang (femur–tibia) dari jaringan lunak/background
-agar celah sendi dan batas tulang bisa diukur pada analisis lanjut.
+Masalah: pisahkan struktur anatomis (folikel hipoekoik gelap vs jaringan
+echogenic terang) dari background agar region mencurigakan bisa diukur pada
+analisis lanjut. Tantangan: speckle noise USG dan artefak garis tepi citra.
 
-## Metode vs masalah
+## Metode (sesuai spreadsheet tugas)
 
-| Teknik | Parameter diuji | Menjawab masalah |
-|--------|-----------------|------------------|
-| Thresholding | Otsu, fixed=127, adaptive-Gaussian | Pisah cepat tulang terang vs background |
-| Region Growing | thresh 5, 10, 20 (seed tengah otomatis) | Tumbuhkan region konsisten intensitas dari seed |
-| K-Means | k=2, 3, 4 | Kelompokkan piksel berdasar intensitas tanpa ambang manual |
-| Watershed | dist_ratio 0.5, 0.7 | Pisah objek bersentuhan via marker + distance transform |
-| Active Contour (Snakes) | (α, β) = (0.015,10), (0.05,5), (0.01,20) | Kontur deformable ikuti tepi tulang, init lingkaran otomatis |
+| Spreadsheet | Modul | Parameter diuji |
+|-------------|-------|-----------------|
+| Thresholding | `thresholding.py` | Otsu, fixed=127, adaptive-Gaussian |
+| Growing | `growing.py` (region growing) | thresh 20, 40, 60 (seed piksel terang + blur 5×5) |
+| Clustering (K-Means) | `clustering_kmeans.py` | k=2, 3, 4 |
+| Clustering (FCM) | `clustering_fcm.py` (fuzzy c-means) | c=2, 3, 4 (m=2.0, seed fixed) |
+| Watershed | `watershed.py` | dist_ratio 0.5, 0.7 |
+| Active Contour (Snakes) | `snakes.py` | (α, β) = (0.015,10), (0.05,5), (0.01,20) |
 
 ## Output
 
-Per citra input menghasilkan 6 file di `output/`:
+Per citra input menghasilkan 7 file di `output/`:
 
 ```
 {nama}_thresholding.png
-{nama}_region_growing.png
-{nama}_kmeans.png
+{nama}_growing.png
+{nama}_clustering_kmeans.png
+{nama}_clustering_fcm.png
 {nama}_watershed.png
-{nama}_active_contour.png
+{nama}_snakes.png
 {nama}_summary.png
 ```
 
-Contoh: `5.png` → `5_thresholding.png`, dst. `*_summary.png` berisi 1 varian
-wakil tiap metode (Otsu, region t10, kmeans k2, watershed r0.7, snakes default).
+Contoh: `Image_003.jpg` → `Image_003_thresholding.png`, dst.
+`*_summary.png` berisi Asli + 1 varian wakil tiap metode
+(Otsu, growing t40, clustering k-means k2, clustering FCM c2,
+watershed r0.7, snakes default).
 
 ## Cara jalan
 
 ```bash
 # dari root repo
-pip install -r requirements.txt
-python segmentation/main.py
+.venv/bin/python segmentation/main.py
 ```
 
-Script memindai semua `.png/.jpg/.jpeg` di `preprocessing-image/data/`,
-memproses satu per satu, menyimpan plot dengan backend `Agg` (tanpa display).
+Script memproses 3 sampel fixed di `dataset/infected/`,
+menyimpan plot dengan backend `Agg` (tanpa display).
 
 ## Import sebagai modul
 
 ```python
 from src import (
     thresholding,
-    region_growing,
-    kmeans_segmentation,
+    growing_segmentation,
+    clustering_kmeans,
+    clustering_fcm,
     watershed_segmentation,
-    active_contour_seg,
+    snakes_segmentation,
 )
 ```
