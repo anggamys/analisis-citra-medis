@@ -63,6 +63,13 @@ Metrik per citra per metode: mean, std (kontras RMS), entropi histogram.
 Output di `output/soal2/`: `{nama}_before_after.png` (citra + histogram),
 `comparison_all.png` (ringkasan), `metrics.csv` (18 baris).
 
+Dokumentasi per metode (Metode, Code, Hasil, Analisis):
+
+- [Histogram Equalization](docs/histogram-equalization.md)
+- [CLAHE](docs/clahe.md)
+- [Gamma Correction](docs/gamma-correction.md)
+- [Perbandingan Hasil + Kesimpulan](docs/perbandingan-kesimpulan.md)
+
 ## Import sebagai modul
 
 ```python
