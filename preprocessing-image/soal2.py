@@ -76,18 +76,18 @@ def plot_before_after(results, name):
         name   : str  - nama/identifier citra
     """
     titles = list(results.keys())
-    _, axes = plt.subplots(2, len(titles), figsize=(18, 6))
+    _, axes = plt.subplots(len(titles), 2, figsize=(10, 4 * len(titles)))
 
     for i, title in enumerate(titles):
         img = results[title]
-        axes[0, i].imshow(img, cmap="gray")
-        axes[0, i].set_title(title)
-        axes[0, i].axis("off")
+        axes[i, 0].imshow(img, cmap="gray")
+        axes[i, 0].set_title(title)
+        axes[i, 0].axis("off")
 
         hist, _ = np.histogram(img.flatten(), bins=256, range=(0, 256))
-        axes[1, i].plot(hist)
-        axes[1, i].set_title(f"Histogram {title}")
-        axes[1, i].set_xlim([0, 256])
+        axes[i, 1].plot(hist)
+        axes[i, 1].set_title(f"Histogram {title}")
+        axes[i, 1].set_xlim([0, 256])
 
     plt.tight_layout()
     plt.savefig(OUTPUT_DIR / f"{name}_before_after.png", dpi=150, bbox_inches="tight")
@@ -103,12 +103,13 @@ def plot_comparison_all(all_results):
     methods = ["Asli", "HE", "CLAHE", "Gamma=0.5"]
     names = list(all_results.keys())
 
-    _, axes = plt.subplots(len(names), len(methods), figsize=(16, 12))
-    for r, name in enumerate(names):
-        for c, method in enumerate(methods):
-            axes[r, c].imshow(all_results[name][method], cmap="gray")
-            axes[r, c].set_title(f"{name} - {method}")
-            axes[r, c].axis("off")
+    panels = [(name, method) for name in names for method in methods]
+    nrows = (len(panels) + 1) // 2
+    _, axes = plt.subplots(nrows, 2, figsize=(10, 5 * nrows))
+    for ax, (name, method) in zip(axes.flatten(), panels):
+        ax.imshow(all_results[name][method], cmap="gray")
+        ax.set_title(f"{name} - {method}")
+        ax.axis("off")
 
     plt.tight_layout()
     plt.savefig(OUTPUT_DIR / "comparison_all.png", dpi=150, bbox_inches="tight")

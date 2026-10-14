@@ -34,18 +34,18 @@ def plot_histograms(images, titles, filename, figsize=(15, 10)):
         filename: str               - nama file output
         figsize : tuple             - ukuran figure (default: (15, 10))
     """
-    n_images = len(images)
-    _, axes = plt.subplots(2, n_images, figsize=figsize)
+    titles = list(titles)
+    _, axes = plt.subplots(len(titles), 2, figsize=(10, 4 * len(titles)))
 
     for i, (title, image) in enumerate(zip(titles, images)):
-        axes[0, i].imshow(image, cmap="gray")
-        axes[0, i].set_title(title)
-        axes[0, i].axis("off")
+        axes[i, 0].imshow(image, cmap="gray")
+        axes[i, 0].set_title(title)
+        axes[i, 0].axis("off")
 
         hist, _ = np.histogram(image.flatten(), bins=256, range=(0, 256))
-        axes[1, i].plot(hist)
-        axes[1, i].set_title(f"Histogram {title}")
-        axes[1, i].set_xlim([0, 256])
+        axes[i, 1].plot(hist)
+        axes[i, 1].set_title(f"Histogram {title}")
+        axes[i, 1].set_xlim([0, 256])
 
     plt.tight_layout()
     plt.savefig(OUTPUT_DIR / filename, dpi=150, bbox_inches="tight")
@@ -100,7 +100,8 @@ def demonstrate_clahe(image, name):
     clip_limits = [1.0, 2.0, 4.0]
     results = {}
 
-    _, axes = plt.subplots(1, len(clip_limits) + 1, figsize=(15, 5))
+    _, axes = plt.subplots(2, 2, figsize=(10, 10))
+    axes = axes.flatten()
 
     axes[0].imshow(image, cmap="gray")
     axes[0].set_title("Citra Asli")
@@ -140,7 +141,8 @@ def demonstrate_gamma_correction(image, name):
     gamma_values = [0.5, 1.0, 2.0]
     results = {}
 
-    _, axes = plt.subplots(1, len(gamma_values) + 1, figsize=(15, 5))
+    _, axes = plt.subplots(2, 2, figsize=(10, 10))
+    axes = axes.flatten()
 
     axes[0].imshow(image, cmap="gray")
     axes[0].set_title("Citra Asli")
@@ -178,7 +180,8 @@ def demonstrate_median_filter(image, name):
     kernel_sizes = [3, 5, 7]
     results = {}
 
-    _, axes = plt.subplots(1, len(kernel_sizes) + 1, figsize=(15, 5))
+    _, axes = plt.subplots(2, 2, figsize=(10, 10))
+    axes = axes.flatten()
 
     axes[0].imshow(image, cmap="gray")
     axes[0].set_title("Citra Asli")
@@ -214,7 +217,8 @@ def demonstrate_gaussian_filter(image, name):
     kernel_sizes = [(3, 3), (5, 5), (7, 7)]
     results = {}
 
-    _, axes = plt.subplots(1, len(kernel_sizes) + 1, figsize=(15, 5))
+    _, axes = plt.subplots(2, 2, figsize=(10, 10))
+    axes = axes.flatten()
 
     axes[0].imshow(image, cmap="gray")
     axes[0].set_title("Citra Asli")
