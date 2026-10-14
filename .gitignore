@@ -9,3 +9,6 @@ __pycache__
 dataset
 archive
 output
+
+# pengecualian: screenshot dokumentasi laporan
+!segmentation/docs/img/*.png

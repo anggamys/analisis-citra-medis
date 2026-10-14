@@ -44,6 +44,18 @@ Contoh: `Image_003.jpg` → `Image_003_thresholding.png`, dst.
 (Otsu, growing t40, clustering k-means k2,
 watershed r0.7, snakes default).
 
+## Dokumentasi per metode (untuk laporan)
+
+Tiap file berisi: penjelasan singkat, kode Python-OpenCV, screenshot
+hasil (`image11690.jpg`), analisis kelebihan/keterbatasan:
+
+- [Thresholding](docs/thresholding.md)
+- [Region Growing](docs/region-growing.md)
+- [Clustering (K-Means)](docs/clustering-kmeans.md)
+- [Watershed](docs/watershed.md)
+- [Active Contour (Snakes)](docs/active-contour-snakes.md)
+- [Perbandingan Hasil + Kesimpulan](docs/perbandingan-kesimpulan.md)
+
 ## Perbandingan untuk laporan
 
 Tidak ada ground-truth mask di `dataset/`, jadi perbandingan dilakukan
