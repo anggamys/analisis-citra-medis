@@ -1,0 +1,20 @@
+# Data mentah dan hasil besar tidak masuk Git.
+data-train/
+data-test/
+data-test-large/
+data/raw/
+data/processed/
+
+# Artefak eksperimen
+experiments/*/checkpoints/
+experiments/*/logs/
+experiments/*/predictions/
+
+# Python
+__pycache__/
+*.py[cod]
+.pytest_cache/
+
+# Model
+*.pt
+*.pth

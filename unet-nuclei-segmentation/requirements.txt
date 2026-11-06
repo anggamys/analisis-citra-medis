@@ -1,0 +1,9 @@
+torch>=2.2
+numpy>=1.24
+opencv-python-headless>=4.8
+Pillow>=10.0
+matplotlib>=3.7
+albumentations>=1.4,<3
+PyYAML>=6.0
+tqdm>=4.66
+pytest>=8.0

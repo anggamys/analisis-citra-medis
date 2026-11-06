@@ -10,6 +10,9 @@ dataset
 archive
 output
 
+# Sidecar metadata Windows (mis. dari ekstraksi ZIP di Windows)
+*:Zone.Identifier
+
 # pengecualian: screenshot dokumentasi laporan
 !segmentation/docs/img/*.png
 !preprocessing-image/docs/img/*.png

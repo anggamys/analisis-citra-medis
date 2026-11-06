@@ -1,0 +1,57 @@
+project:
+  name: unet-nuclei-segmentation
+  experiment: baseline
+  seed: 42
+  deterministic: false
+
+paths:
+  # Raw data tetap di lokasi aslinya agar tidak perlu memindahkan ~640 MB.
+  train_raw: data-train
+  stage1_test_raw: data-test
+  stage2_test_raw: data-test-large
+  solutions_dir: data/solutions
+  processed_dir: data/processed
+  splits_dir: data/splits
+  experiments_dir: experiments
+
+data:
+  image_size: 256
+  val_ratio: 0.15
+  num_workers: 2
+  pin_memory: true
+  normalize_mean: [0.5, 0.5, 0.5]
+  normalize_std: [0.5, 0.5, 0.5]
+
+model:
+  architecture: unet
+  in_channels: 3
+  out_channels: 1
+  base_channels: 32   # naikkan ke 64 jika training di GPU >= 8 GB
+  depth: 4
+  bilinear: false
+  dropout: 0.0
+
+training:
+  epochs: 50
+  batch_size: 4
+  learning_rate: 0.001
+  weight_decay: 0.0001
+  amp: true
+  grad_clip: 0.0
+  scheduler: plateau  # plateau | cosine | none
+  scheduler_factor: 0.5
+  scheduler_patience: 3
+  early_stopping_patience: 10
+  min_delta: 0.0001
+  threshold: 0.5
+
+loss:
+  bce_weight: 0.5
+  dice_weight: 0.5
+  bce_pos_weight: 1.0
+
+evaluation:
+  batch_size: 8
+  threshold_candidates: [0.30, 0.35, 0.40, 0.45, 0.50, 0.55, 0.60, 0.65, 0.70]
+  num_visualizations: 8
+  num_failure_cases: 8
