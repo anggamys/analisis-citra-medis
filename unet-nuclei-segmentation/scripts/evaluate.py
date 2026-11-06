@@ -5,7 +5,6 @@ from __future__ import annotations
 import argparse
 
 import torch
-
 from src.data.augmentation import build_eval_transforms
 from src.data.dataloader import create_dataloader
 from src.data.dataset import NucleiDataset
@@ -49,7 +48,9 @@ def main() -> None:
     args = parse_args()
     config = load_config(args.config)
     paths = config["paths"]
-    experiment_dir = resolve_path(paths["experiments_dir"]) / config["project"]["experiment"]
+    experiment_dir = (
+        resolve_path(paths["experiments_dir"]) / config["project"]["experiment"]
+    )
     checkpoint_path = (
         resolve_path(args.checkpoint)
         if args.checkpoint
@@ -79,8 +80,23 @@ def main() -> None:
 
     data_cfg = train_config["data"]
     eval_cfg = train_config["evaluation"]
-    mean = tuple(float(value) for value in data_cfg["normalize_mean"])
-    std = tuple(float(value) for value in data_cfg["normalize_std"])
+    mean_values = tuple(float(value) for value in data_cfg["normalize_mean"])
+    std_values = tuple(float(value) for value in data_cfg["normalize_std"])
+    if len(mean_values) != 3 or len(std_values) != 3:
+        raise ValueError(
+            "normalize_mean dan normalize_std harus masing-masing memiliki "
+            "tepat 3 nilai."
+        )
+    mean: tuple[float, float, float] = (
+        mean_values[0],
+        mean_values[1],
+        mean_values[2],
+    )
+    std: tuple[float, float, float] = (
+        std_values[0],
+        std_values[1],
+        std_values[2],
+    )
     transforms = build_eval_transforms(
         int(data_cfg["image_size"]),
         mean=mean,

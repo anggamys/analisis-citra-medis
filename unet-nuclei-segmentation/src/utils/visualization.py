@@ -5,7 +5,7 @@ from __future__ import annotations
 import csv
 from collections.abc import Sequence
 from pathlib import Path
-from typing import Any
+from typing import Any, cast
 
 import cv2
 import matplotlib
@@ -21,8 +21,9 @@ def tensor_to_image(
     mean: Sequence[float] = (0.5, 0.5, 0.5),
     std: Sequence[float] = (0.5, 0.5, 0.5),
 ) -> np.ndarray:
-    if hasattr(tensor, "detach"):
-        array = tensor.detach().cpu().numpy()
+    if isinstance(tensor, torch.Tensor):
+        tensor_value = cast(torch.Tensor, tensor)
+        array = tensor_value.detach().cpu().numpy()
     else:
         array = np.asarray(tensor)
     if array.ndim == 3:

@@ -3,12 +3,11 @@
 from __future__ import annotations
 
 import argparse
+from typing import cast
 
 import cv2
 import numpy as np
 import torch
-from tqdm import tqdm
-
 from src.data.augmentation import build_eval_transforms
 from src.data.dataloader import create_dataloader
 from src.data.dataset import NucleiDataset
@@ -18,6 +17,7 @@ from src.utils.checkpoint import load_checkpoint
 from src.utils.config import load_config, resolve_path
 from src.utils.io import save_json
 from src.utils.visualization import save_binary_mask, save_overlay_image
+from tqdm import tqdm
 
 
 def parse_args() -> argparse.Namespace:
@@ -45,7 +45,9 @@ def main() -> None:
     args = parse_args()
     config = load_config(args.config)
     paths = config["paths"]
-    experiment_dir = resolve_path(paths["experiments_dir"]) / config["project"]["experiment"]
+    experiment_dir = (
+        resolve_path(paths["experiments_dir"]) / config["project"]["experiment"]
+    )
     checkpoint_path = (
         resolve_path(args.checkpoint)
         if args.checkpoint
@@ -82,8 +84,14 @@ def main() -> None:
 
     data_cfg = train_config["data"]
     image_size = int(data_cfg["image_size"])
-    mean = tuple(float(value) for value in data_cfg["normalize_mean"])
-    std = tuple(float(value) for value in data_cfg["normalize_std"])
+    mean = cast(
+        tuple[float, float, float],
+        tuple(float(value) for value in data_cfg["normalize_mean"]),
+    )
+    std = cast(
+        tuple[float, float, float],
+        tuple(float(value) for value in data_cfg["normalize_std"]),
+    )
     transforms = build_eval_transforms(
         image_size,
         mean=mean,
@@ -129,9 +137,7 @@ def main() -> None:
                     width,
                     image_size,
                 )
-                probability = probabilities[index, 0][
-                    :content_height, :content_width
-                ]
+                probability = probabilities[index, 0][:content_height, :content_width]
                 probability = np.ascontiguousarray(probability)
                 probability = cv2.resize(
                     probability,
@@ -144,7 +150,9 @@ def main() -> None:
                 if args.save_probabilities:
                     probability_dir = output_dir / "probabilities"
                     probability_dir.mkdir(parents=True, exist_ok=True)
-                    probability_uint8 = np.clip(probability * 255.0, 0, 255).astype(np.uint8)
+                    probability_uint8 = np.clip(probability * 255.0, 0, 255).astype(
+                        np.uint8
+                    )
                     cv2.imwrite(
                         str(probability_dir / f"{image_id}.png"),
                         probability_uint8,

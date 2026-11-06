@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-from typing import Iterable
+from collections.abc import Iterable
 
 import numpy as np
 import torch
@@ -92,7 +92,7 @@ def summarize_metrics(
             "median": float(np.median(values)),
             "min": float(values.min()),
             "max": float(values.max()),
-            "n": int(len(values)),
+            "n": len(values),
         }
     return summary
 

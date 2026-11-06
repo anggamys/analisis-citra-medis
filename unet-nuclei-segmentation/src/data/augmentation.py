@@ -6,8 +6,8 @@ import cv2
 from albumentations import (
     Affine,
     Compose,
-    GaussNoise,
     GaussianBlur,
+    GaussNoise,
     HorizontalFlip,
     LongestMaxSize,
     Normalize,

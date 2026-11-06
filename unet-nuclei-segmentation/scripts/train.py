@@ -5,7 +5,6 @@ from __future__ import annotations
 import argparse
 
 import torch
-
 from src.data.augmentation import build_eval_transforms, build_train_transforms
 from src.data.dataloader import create_dataloader
 from src.data.dataset import NucleiDataset
@@ -98,8 +97,16 @@ def main() -> None:
         print("Device: CPU (AMP dinonaktifkan)")
 
     data_cfg = config["data"]
-    mean = tuple(float(value) for value in data_cfg["normalize_mean"])
-    std = tuple(float(value) for value in data_cfg["normalize_std"])
+    mean = (
+        float(data_cfg["normalize_mean"][0]),
+        float(data_cfg["normalize_mean"][1]),
+        float(data_cfg["normalize_mean"][2]),
+    )
+    std = (
+        float(data_cfg["normalize_std"][0]),
+        float(data_cfg["normalize_std"][1]),
+        float(data_cfg["normalize_std"][2]),
+    )
     image_size = int(data_cfg["image_size"])
 
     train_dataset = NucleiDataset(

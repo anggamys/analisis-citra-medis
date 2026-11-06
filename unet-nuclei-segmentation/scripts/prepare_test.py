@@ -12,12 +12,11 @@ from typing import Any
 
 import cv2
 import numpy as np
-from tqdm import tqdm
-
 from src.data.manifest import write_manifest
 from src.data.rle import rle_decode
 from src.utils.config import PROJECT_ROOT, load_config, resolve_path
 from src.utils.io import save_json
+from tqdm import tqdm
 
 SOLUTIONS = {
     "stage1": {
@@ -31,8 +30,7 @@ SOLUTIONS = {
     "stage2": {
         "csv": "stage2_solution_final.csv",
         "url": (
-            "https://data.broadinstitute.org/bbbc/BBBC038/"
-            "stage2_solution_final.csv"
+            "https://data.broadinstitute.org/bbbc/BBBC038/stage2_solution_final.csv"
         ),
         "raw_key": "stage2_test_raw",
         "split": "test_stage2_scored",

@@ -9,13 +9,12 @@ from pathlib import Path
 
 import cv2
 import numpy as np
-from tqdm import tqdm
-
 from src.data.manifest import write_manifest
 from src.data.preprocessing import merge_instance_masks
 from src.data.split import split_ids
 from src.utils.config import PROJECT_ROOT, load_config, resolve_path
 from src.utils.io import save_json
+from tqdm import tqdm
 
 
 def relative_path(path: Path) -> str:

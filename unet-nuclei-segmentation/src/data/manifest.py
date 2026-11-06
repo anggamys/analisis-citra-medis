@@ -6,7 +6,6 @@ import csv
 from collections.abc import Iterable
 from pathlib import Path
 
-
 REQUIRED_COLUMNS = {"image_id", "image_path"}
 
 
