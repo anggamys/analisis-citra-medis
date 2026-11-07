@@ -28,8 +28,18 @@ all-task-remote/
 
 ## Setup
 
+Semua tugas memakai **satu virtual environment** di root repo:
+
 ```bash
+python3 -m venv .venv
+source .venv/bin/activate
+
+# Laptop CPU-only (lewati langkah ini di Colab/GPU):
+pip install torch --index-url https://download.pytorch.org/whl/cpu
+
+# Dependensi semua tugas:
 pip install -r requirements.txt
+pip install -r unet-nuclei-segmentation/requirements.txt
 ```
 
 ## Cara jalan
@@ -39,11 +49,10 @@ python preprocessing-image/main.py
 python segmentation/main.py
 ```
 
-Tugas U-Net memakai virtual environment dan dependensi terpisah:
+Tugas U-Net memakai venv yang sama:
 
 ```bash
 cd unet-nuclei-segmentation
-pip install -r requirements.txt
 python scripts/prepare_data.py
 python scripts/prepare_test.py
 python scripts/train.py
@@ -57,7 +66,7 @@ dengan format `{nama_input}_{teknik}.png`.
 
 ## Dependensi
 
-- `opencv-python` — baca citra, CLAHE, median, Gaussian, threshold, k-means, watershed
+- `opencv-python-headless` — baca citra, CLAHE, median, Gaussian, threshold, k-means, watershed
 - `numpy` — operasi array / histogram
 - `matplotlib` — simpan plot perbandingan (backend `Agg`, tanpa display)
 - `scikit-image` — active contour (snakes)

@@ -52,8 +52,11 @@ konsisten dan mudah diulang.
 
 ## Setup
 
-Disarankan memakai Python 3.12+ dan virtual environment terpisah. Setup ini
-sudah diuji dengan Python 3.14.10 dan PyTorch CPU:
+Proyek ini memakai **satu virtual environment di root repo** (`.venv`),
+dipakai bersama `preprocessing-image/` dan `segmentation/`. Setup diuji dengan
+Python 3.14.10 dan PyTorch CPU.
+
+Dari root repo:
 
 ```bash
 python3 -m venv .venv
@@ -62,8 +65,16 @@ source .venv/bin/activate
 # CPU-only (tanpa CUDA), jauh lebih ringan:
 pip install torch --index-url https://download.pytorch.org/whl/cpu
 
-# Dependensi lain (torch yang sudah terpasang akan dipakai ulang):
+# Dependensi klasik + U-Net (torch yang sudah terpasang dipakai ulang):
 pip install -r requirements.txt
+pip install -r unet-nuclei-segmentation/requirements.txt
+```
+
+Lalu jalankan script dari folder proyek:
+
+```bash
+cd unet-nuclei-segmentation
+python scripts/train.py --smoke-test
 ```
 
 Catatan: instalasi dependensi tidak dilakukan otomatis oleh repo ini. Untuk
@@ -72,8 +83,9 @@ situs resmi PyTorch agar build yang terpasang sesuai perangkat.
 
 Di Colab/Kaggle, PyTorch bawaan sudah memakai CUDA. **Jangan** menjalankan
 perintah `--index-url .../cpu` di sana karena akan mengganti torch CUDA dengan
-build CPU. Cukup jalankan `pip install -r requirements.txt`; torch yang sudah
-ada akan dipakai ulang.
+build CPU. Cukup jalankan `pip install -r unet-nuclei-segmentation/requirements.txt`
+dari root repo (atau `pip install -r requirements.txt` dari folder proyek);
+torch yang sudah ada akan dipakai ulang.
 
 ## Alur penggunaan
 
