@@ -6,6 +6,8 @@ Formula: G(x,y) = (1/(2*pi*sigma^2)) * exp(-(x^2+y^2)/(2*sigma^2))
 Referensi: https://link.springer.com/article/10.1007/s10851-024-01196-9
 """
 
+import sys
+
 import cv2
 import numpy as np
 
@@ -37,8 +39,6 @@ def gaussian_filter(
 
 
 if __name__ == "__main__":
-    import sys
-
     if len(sys.argv) < 2:
         print("Usage: python gaussian_filter.py <image_path>")
         sys.exit(1)

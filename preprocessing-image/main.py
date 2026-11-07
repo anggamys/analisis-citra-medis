@@ -11,11 +11,6 @@ matplotlib.use("Agg")
 import matplotlib.pyplot as plt
 import numpy as np
 
-SCRIPT_DIR = Path(__file__).parent
-DATA_DIR = SCRIPT_DIR / "data"
-OUTPUT_DIR = SCRIPT_DIR / "output"
-OUTPUT_DIR.mkdir(exist_ok=True)
-
 from src import (
     clahe,
     gamma_correction,
@@ -23,6 +18,11 @@ from src import (
     histogram_equalization,
     median_filter,
 )
+
+SCRIPT_DIR = Path(__file__).parent
+DATA_DIR = SCRIPT_DIR / "data"
+OUTPUT_DIR = SCRIPT_DIR / "output"
+OUTPUT_DIR.mkdir(exist_ok=True)
 
 
 def plot_histograms(images, titles, filename, figsize=(15, 10)):

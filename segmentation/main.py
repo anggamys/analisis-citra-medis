@@ -15,6 +15,14 @@ matplotlib.use("Agg")
 import matplotlib.pyplot as plt
 import numpy as np
 
+from src import (
+    clustering_kmeans,
+    growing_segmentation,
+    snakes_segmentation,
+    thresholding,
+    watershed_segmentation,
+)
+
 SCRIPT_DIR = Path(__file__).parent
 DATA_DIR = SCRIPT_DIR.parent / "dataset" / "infected"
 OUTPUT_DIR = SCRIPT_DIR / "output"
@@ -23,14 +31,6 @@ OUTPUT_DIR.mkdir(exist_ok=True)
 # Jumlah citra acak per run. File dataset berpasangan duplikat
 # (001=002, 003=004, ...) sehingga sampling memakai isi unik (md5).
 N_SAMPLES = 3
-
-from src import (
-    clustering_kmeans,
-    growing_segmentation,
-    snakes_segmentation,
-    thresholding,
-    watershed_segmentation,
-)
 
 SNAKE_PARAMS = [(0.015, 10.0), (0.05, 5.0), (0.01, 20.0)]
 

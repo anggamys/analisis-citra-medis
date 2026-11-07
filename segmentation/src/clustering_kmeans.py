@@ -6,6 +6,8 @@ Tujuan: min sum_{k} sum_{x in Ck} ||x - mu_k||^2
 Referensi: https://docs.opencv.org/4.x/d1/d5c/tutorial_py_kmeans_opencv.html
 """
 
+import sys
+
 import cv2
 import numpy as np
 
@@ -49,8 +51,6 @@ def clustering_kmeans(image: np.ndarray, k: int = 2, attempts: int = 10) -> np.n
 
 
 if __name__ == "__main__":
-    import sys
-
     if len(sys.argv) < 2:
         print("Usage: python clustering_kmeans.py <image_path>")
         sys.exit(1)

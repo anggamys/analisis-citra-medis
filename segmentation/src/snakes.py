@@ -7,8 +7,12 @@ Kontur awal lingkaran otomatis di tengah citra.
 Referensi: https://scikit-image.org/docs/stable/api/skimage.segmentation.html#skimage.segmentation.active_contour
 """
 
+import sys
+
 import cv2
 import numpy as np
+from skimage.draw import polygon2mask
+from skimage.segmentation import active_contour
 
 
 def snakes_segmentation(
@@ -42,8 +46,6 @@ def snakes_segmentation(
     np.ndarray
         Array (n_points, 2) koordinat (row, col) kontur akhir
     """
-    from skimage.segmentation import active_contour
-
     if len(image.shape) != 2:
         raise ValueError("Image harus grayscale")
 
@@ -60,8 +62,6 @@ def snakes_segmentation(
 
 
 if __name__ == "__main__":
-    import sys
-
     if len(sys.argv) < 2:
         print("Usage: python snakes.py <image_path>")
         sys.exit(1)
@@ -70,8 +70,6 @@ if __name__ == "__main__":
     if image is None:
         print(f"Error: Tidak dapat membuka citra {sys.argv[1]}")
         sys.exit(1)
-
-    from skimage.draw import polygon2mask
 
     for alpha, beta in [(0.015, 10.0), (0.05, 5.0), (0.01, 20.0)]:
         snake = snakes_segmentation(image, alpha=alpha, beta=beta)

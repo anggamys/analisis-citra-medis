@@ -7,6 +7,8 @@ Otsu: T* = argmax w0(T)*w1(T)*(mu0-mu1)^2
 Referensi: https://docs.opencv.org/4.x/d7/d4d/tutorial_py_thresholding.html
 """
 
+import sys
+
 import cv2
 import numpy as np
 
@@ -64,8 +66,6 @@ def thresholding(
 
 
 if __name__ == "__main__":
-    import sys
-
     if len(sys.argv) < 2:
         print("Usage: python thresholding.py <image_path>")
         sys.exit(1)

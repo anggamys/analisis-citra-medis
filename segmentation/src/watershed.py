@@ -7,6 +7,8 @@ distance transform (sure fg) -> unknown -> markers -> cv2.watershed.
 Referensi: https://docs.opencv.org/4.x/d3/db4/tutorial_py_watershed.html
 """
 
+import sys
+
 import cv2
 import numpy as np
 
@@ -60,8 +62,6 @@ def watershed_segmentation(
 
 
 if __name__ == "__main__":
-    import sys
-
     if len(sys.argv) < 2:
         print("Usage: python watershed.py <image_path>")
         sys.exit(1)

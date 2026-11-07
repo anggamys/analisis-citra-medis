@@ -6,6 +6,8 @@ Formula: T(i) = (L-1)/N * sum_{j=0}^{i} H_c(j)
 Referensi: https://link.springer.com/article/10.1007/s11554-024-01465-1
 """
 
+import sys
+
 import cv2
 import numpy as np
 
@@ -39,8 +41,6 @@ def clahe(
 
 
 if __name__ == "__main__":
-    import sys
-
     if len(sys.argv) < 2:
         print("Usage: python clahe.py <image_path>")
         sys.exit(1)

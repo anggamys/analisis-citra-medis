@@ -7,6 +7,9 @@ dimana C(r_k) = sum_{j=0}^{k} p(r_j)
 Referensi: https://pmc.ncbi.nlm.nih.gov/articles/PMC10635952/
 """
 
+import sys
+
+import cv2
 import numpy as np
 
 
@@ -43,10 +46,6 @@ def histogram_equalization(image: np.ndarray) -> np.ndarray:
 
 
 if __name__ == "__main__":
-    import sys
-
-    import cv2
-
     if len(sys.argv) < 2:
         print("Usage: python histogram_equalization.py <image_path>")
         sys.exit(1)

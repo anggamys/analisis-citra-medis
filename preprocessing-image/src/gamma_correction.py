@@ -7,6 +7,9 @@ dimana r = intensitas input (normalized 0-1)
 Referensi: https://ietresearch.onlinelibrary.wiley.com/doi/10.1049/iet-ipr.2019.0992
 """
 
+import sys
+
+import cv2
 import numpy as np
 
 
@@ -42,10 +45,6 @@ def gamma_correction(image: np.ndarray, gamma: float, c: float = 1.0) -> np.ndar
 
 
 if __name__ == "__main__":
-    import sys
-
-    import cv2
-
     if len(sys.argv) < 2:
         print("Usage: python gamma_correction.py <image_path>")
         sys.exit(1)

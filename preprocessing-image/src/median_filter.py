@@ -6,6 +6,8 @@ Formula: g(x,y) = median{f(s,t) : (s,t) ∈ S_xy}
 Referensi: https://www.sciencedirect.com/topics/computer-science/median-filtering
 """
 
+import sys
+
 import cv2
 import numpy as np
 
@@ -36,8 +38,6 @@ def median_filter(image: np.ndarray, kernel_size: int = 3) -> np.ndarray:
 
 
 if __name__ == "__main__":
-    import sys
-
     if len(sys.argv) < 2:
         print("Usage: python median_filter.py <image_path>")
         sys.exit(1)

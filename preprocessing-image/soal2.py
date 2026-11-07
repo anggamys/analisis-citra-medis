@@ -17,12 +17,12 @@ matplotlib.use("Agg")
 import matplotlib.pyplot as plt
 import numpy as np
 
+from src import clahe, gamma_correction, histogram_equalization
+
 SCRIPT_DIR = Path(__file__).parent
 DATA_DIR = SCRIPT_DIR.parent / "dataset" / "infected"
 OUTPUT_DIR = SCRIPT_DIR / "output" / "soal2"
 OUTPUT_DIR.mkdir(parents=True, exist_ok=True)
-
-from src import clahe, gamma_correction, histogram_equalization
 
 SAMPLES = ["Image_001.jpg", "Image_003.jpg", "Image_005.jpg"]
 GAMMA_VALUES = [0.5, 1.0, 2.0]

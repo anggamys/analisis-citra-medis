@@ -7,6 +7,7 @@ Kriteria tumbuh: |f(p) - mean(region)| <= thresh
 Referensi: https://www.sciencedirect.com/topics/computer-science/region-growing
 """
 
+import sys
 from collections import deque
 
 import cv2
@@ -165,8 +166,6 @@ def growing_segmentation(
 
 
 if __name__ == "__main__":
-    import sys
-
     if len(sys.argv) < 2:
         print("Usage: python growing.py <image_path>")
         sys.exit(1)
