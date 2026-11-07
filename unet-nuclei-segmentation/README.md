@@ -122,8 +122,16 @@ Script akan:
 python scripts/prepare_test.py --config configs/config.yaml
 ```
 
-Jika CSV solusi belum ada, tambahkan `--download`. Script akan men-decode RLE
-dan menulis:
+Jika CSV solusi belum ada, tambahkan `--download`. Opsi yang sama juga
+mengunduh dataset test resmi jika foldernya belum ada (stage1 ~10 MB, stage2
+~290 MB), misalnya hanya stage1:
+
+```bash
+python scripts/prepare_test.py --stage stage1 --download
+```
+
+Tanpa data test mentah, stage tersebut dilewati dengan peringatan (bukan
+traceback). Script akan men-decode RLE dan menulis:
 
 - `data/splits/test_stage1.csv` (65 citra),
 - `data/splits/test_stage2_scored.csv` (106 citra),

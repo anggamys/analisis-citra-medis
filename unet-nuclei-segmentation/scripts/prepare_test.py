@@ -4,8 +4,11 @@ from __future__ import annotations
 
 import argparse
 import csv
+import shutil
 import sys
+import tempfile
 import urllib.request
+import zipfile
 from collections import defaultdict
 from pathlib import Path
 from typing import Any
@@ -27,6 +30,8 @@ SOLUTIONS = {
         "csv": "stage1_solution.csv",
         "url": "https://data.broadinstitute.org/bbbc/BBBC038/stage1_solution.csv",
         "raw_key": "stage1_test_raw",
+        "raw_url": "https://data.broadinstitute.org/bbbc/BBBC038/stage1_test.zip",
+        "raw_prefix": "stage1_test",
         "split": "test_stage1",
         "output": "stage1",
         "predict_manifest": "predict_stage1_all.csv",
@@ -37,6 +42,8 @@ SOLUTIONS = {
             "https://data.broadinstitute.org/bbbc/BBBC038/stage2_solution_final.csv"
         ),
         "raw_key": "stage2_test_raw",
+        "raw_url": "https://data.broadinstitute.org/bbbc/BBBC038/stage2_test_final.zip",
+        "raw_prefix": "stage2_test_final",
         "split": "test_stage2_scored",
         "output": "stage2_scored",
         "predict_manifest": "predict_stage2_all.csv",
@@ -49,6 +56,43 @@ def relative_path(path: Path) -> str:
         return path.relative_to(PROJECT_ROOT).as_posix()
     except ValueError:
         return str(path)
+
+
+def has_raw_images(raw_dir: Path) -> bool:
+    return raw_dir.is_dir() and any(
+        (folder / "images").is_dir()
+        for folder in raw_dir.iterdir()
+        if folder.is_dir()
+    )
+
+
+def download_and_extract(url: str, destination: Path, prefix: str) -> None:
+    """Unduh ZIP dataset resmi lalu ekstrak tanpa folder pembungkus."""
+    destination.mkdir(parents=True, exist_ok=True)
+    with tempfile.NamedTemporaryFile(suffix=".zip", delete=False) as handle:
+        archive_path = Path(handle.name)
+
+    try:
+        print(f"Mengunduh dataset: {url}")
+        urllib.request.urlretrieve(url, archive_path)
+        print(f"Mengekstrak ke: {destination}")
+        with zipfile.ZipFile(archive_path) as archive:
+            for member in archive.infolist():
+                parts = Path(member.filename).parts
+                if parts and parts[0] == prefix:
+                    parts = parts[1:]
+                if not parts:
+                    continue
+
+                target = destination.joinpath(*parts)
+                if member.is_dir():
+                    target.mkdir(parents=True, exist_ok=True)
+                    continue
+                target.parent.mkdir(parents=True, exist_ok=True)
+                with archive.open(member) as source, target.open("wb") as output:
+                    shutil.copyfileobj(source, output)
+    finally:
+        archive_path.unlink(missing_ok=True)
 
 
 def ensure_solution(path: Path, url: str, download: bool) -> None:
@@ -110,6 +154,28 @@ def process_stage(
     processed_dir = resolve_path(paths["processed_dir"])
     splits_dir = resolve_path(paths["splits_dir"])
     raw_dir = resolve_path(paths[spec["raw_key"]])
+
+    raw_ready = has_raw_images(raw_dir)
+    if not raw_ready and download:
+        download_and_extract(spec["raw_url"], raw_dir, spec["raw_prefix"])
+        raw_ready = has_raw_images(raw_dir)
+    if not raw_ready:
+        message = f"Data mentah {name} tidak ditemukan: {raw_dir}"
+        print(
+            f"Peringatan: {message}\n"
+            "  Jalankan ulang dengan --download atau sediakan dataset test.",
+            file=sys.stderr,
+        )
+        return [], {
+            "stage": name,
+            "raw_dir": str(raw_dir),
+            "num_solution_images": 0,
+            "num_scored": 0,
+            "num_ignored": 0,
+            "manifest": str(splits_dir / f"{spec['split']}.csv"),
+            "errors": [message],
+            "skipped": True,
+        }
 
     solution_path = solutions_dir / spec["csv"]
     ensure_solution(solution_path, spec["url"], download=download)
@@ -214,6 +280,14 @@ def write_predict_manifest(
     raw_dir = resolve_path(paths[spec["raw_key"]])
     splits_dir = resolve_path(paths["splits_dir"])
 
+    if not raw_dir.is_dir():
+        print(
+            f"Peringatan {name}: folder {raw_dir} tidak ada; "
+            "manifest prediksi dilewati.",
+            file=sys.stderr,
+        )
+        return splits_dir / spec["predict_manifest"], 0
+
     rows: list[dict] = []
     errors: list[str] = []
     for folder in sorted(raw_dir.iterdir()):
@@ -270,11 +344,18 @@ def main() -> None:
             limit=args.limit,
         )
         reports[name] = report
-        predict_path, predict_count = write_predict_manifest(
-            name,
-            config,
-            split_name=f"predict_{name}",
-        )
+        if report.get("skipped"):
+            predict_path = (
+                resolve_path(config["paths"]["splits_dir"])
+                / SOLUTIONS[name]["predict_manifest"]
+            )
+            predict_count = 0
+        else:
+            predict_path, predict_count = write_predict_manifest(
+                name,
+                config,
+                split_name=f"predict_{name}",
+            )
         report["predict_manifest"] = str(predict_path)
         report["predict_images"] = predict_count
         print(
