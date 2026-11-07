@@ -31,6 +31,21 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--config", default="configs/config.yaml")
     parser.add_argument("--experiment", default=None)
     parser.add_argument("--resume", default=None)
+    parser.add_argument(
+        "--splits-dir",
+        default=None,
+        help="Direktori berisi train.csv dan val.csv (override config).",
+    )
+    parser.add_argument(
+        "--train-manifest",
+        default=None,
+        help="Path CSV manifest training (override train.csv).",
+    )
+    parser.add_argument(
+        "--val-manifest",
+        default=None,
+        help="Path CSV manifest validasi/test (override val.csv).",
+    )
     parser.add_argument("--device", default=None, help="auto | cpu | cuda")
     parser.add_argument("--epochs", type=int, default=None)
     parser.add_argument("--batch-size", type=int, default=None)
@@ -79,19 +94,32 @@ def main() -> None:
     )
 
     paths = config["paths"]
-    splits_dir = resolve_path(paths["splits_dir"])
+    splits_dir = resolve_path(args.splits_dir or paths["splits_dir"])
     experiments_dir = resolve_path(paths["experiments_dir"])
     experiment_dir = experiments_dir / config["project"]["experiment"]
     experiment_dir.mkdir(parents=True, exist_ok=True)
 
-    train_csv = splits_dir / "train.csv"
-    val_csv = splits_dir / "val.csv"
-    if not train_csv.is_file() or not val_csv.is_file():
+    train_csv = (
+        resolve_path(args.train_manifest)
+        if args.train_manifest
+        else splits_dir / "train.csv"
+    )
+    val_csv = (
+        resolve_path(args.val_manifest)
+        if args.val_manifest
+        else splits_dir / "val.csv"
+    )
+    missing = [path for path in (train_csv, val_csv) if not path.is_file()]
+    if missing:
         raise SystemExit(
-            f"Manifest train/val tidak ditemukan. Jalankan dulu:\n"
-            f"  python scripts/prepare_data.py --config {args.config}"
+            "Manifest train/val tidak ditemukan:\n"
+            + "\n".join(f"  - {path}" for path in missing)
+            + "\nJalankan prepare_data.py atau arahkan "
+            "--train-manifest/--val-manifest."
         )
 
+    print(f"Train manifest: {train_csv}")
+    print(f"Val manifest  : {val_csv}")
     train_rows = read_manifest(train_csv)
     val_rows = read_manifest(val_csv)
     if args.max_samples is not None:

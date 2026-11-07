@@ -134,6 +134,19 @@ python scripts/train.py --device cpu --batch-size 2 --base-channels 32 --epochs 
 
 Smoke test menjalankan 1 epoch pada 8 sampel dan otomatis memakai batch size 2.
 
+Manifest train/validation bisa diarahkan langsung dari terminal:
+
+```bash
+python scripts/train.py \
+  --train-manifest data/splits/train.csv \
+  --val-manifest data/splits/val.csv
+
+# atau arahkan seluruh direktori split
+python scripts/train.py --splits-dir data/splits
+```
+
+Path relatif dihitung dari root proyek (`unet-nuclei-segmentation/`).
+
 Resume:
 
 ```bash
