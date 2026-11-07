@@ -3,7 +3,11 @@
 from __future__ import annotations
 
 import argparse
+import shutil
 import sys
+import tempfile
+import urllib.request
+import zipfile
 from collections import Counter
 from pathlib import Path
 
@@ -19,6 +23,37 @@ from src.data.split import split_ids
 from src.utils.config import PROJECT_ROOT, load_config, resolve_path
 from src.utils.io import save_json
 from tqdm import tqdm
+
+STAGE1_TRAIN_URL = "https://data.broadinstitute.org/bbbc/BBBC038/stage1_train.zip"
+
+
+def download_stage1_train(train_raw: Path) -> None:
+    """Unduh dan ekstrak stage1_train resmi ke ``train_raw``."""
+    train_raw.mkdir(parents=True, exist_ok=True)
+    with tempfile.NamedTemporaryFile(suffix=".zip", delete=False) as handle:
+        archive_path = Path(handle.name)
+
+    try:
+        print(f"Mengunduh dataset: {STAGE1_TRAIN_URL}")
+        urllib.request.urlretrieve(STAGE1_TRAIN_URL, archive_path)
+        print(f"Mengekstrak ke: {train_raw}")
+        with zipfile.ZipFile(archive_path) as archive:
+            for member in archive.infolist():
+                parts = Path(member.filename).parts
+                if parts and parts[0] == "stage1_train":
+                    parts = parts[1:]
+                if not parts:
+                    continue
+
+                target = train_raw.joinpath(*parts)
+                if member.is_dir():
+                    target.mkdir(parents=True, exist_ok=True)
+                    continue
+                target.parent.mkdir(parents=True, exist_ok=True)
+                with archive.open(member) as source, target.open("wb") as output:
+                    shutil.copyfileobj(source, output)
+    finally:
+        archive_path.unlink(missing_ok=True)
 
 
 def relative_path(path: Path) -> str:
@@ -127,6 +162,11 @@ def main() -> None:
     parser.add_argument("--val-ratio", type=float, default=None)
     parser.add_argument("--seed", type=int, default=None)
     parser.add_argument("--force", action="store_true")
+    parser.add_argument(
+        "--download",
+        action="store_true",
+        help="Unduh stage1_train resmi jika data-train masih kosong.",
+    )
     parser.add_argument("--limit", type=int, default=None)
     args = parser.parse_args()
 
@@ -146,6 +186,14 @@ def main() -> None:
         else float(data_cfg.get("val_ratio", 0.15))
     )
     seed = int(args.seed if args.seed is not None else config["project"]["seed"])
+
+    has_raw_data = train_raw.is_dir() and any(
+        path.is_dir() for path in train_raw.iterdir()
+    )
+    if args.download and not has_raw_data:
+        download_stage1_train(train_raw)
+    elif args.download:
+        print(f"data-train sudah berisi, unduhan dilewati: {train_raw}")
 
     entries, discovery_errors = discover_images(train_raw)
     if args.limit is not None:

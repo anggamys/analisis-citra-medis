@@ -38,13 +38,18 @@ class NucleiDataset(Dataset):
             image_path = _resolve(row["image_path"])
             if not image_path.is_file():
                 raise FileNotFoundError(
-                    f"Baris {index}: citra tidak ditemukan: {image_path}"
+                    f"Baris {index}: citra tidak ditemukan: {image_path}\n"
+                    "Pastikan data mentah tersedia, lalu jalankan ulang "
+                    "`python scripts/prepare_data.py`."
                 )
             if has_masks:
                 mask_path = _resolve(row["mask_path"])
                 if not mask_path.is_file():
                     raise FileNotFoundError(
-                        f"Baris {index}: mask tidak ditemukan: {mask_path}"
+                        f"Baris {index}: mask tidak ditemukan: {mask_path}\n"
+                        "Mask gabungan tidak ikut Git. Jalankan "
+                        "`python scripts/prepare_data.py` dari folder proyek "
+                        "untuk membuatnya dari data-train."
                     )
 
     def __len__(self) -> int:

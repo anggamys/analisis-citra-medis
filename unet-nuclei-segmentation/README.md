@@ -103,6 +103,19 @@ Script akan:
 - menulis `data/splits/train.csv`, `data/splits/val.csv`, dan
   `data/processed/dataset_report.json`.
 
+> **Penting untuk Colab atau clone baru:** `data-train/` dan `data/processed/`
+> tidak ikut Git, sedangkan `data/splits/*.csv` ikut Git. Jadi mask gabungan
+> harus dibuat ulang di mesin baru. Jika `data-train/` belum ada, unduh
+> otomatis dataset stage1 resmi:
+>
+> ```bash
+> python scripts/prepare_data.py --download
+> ```
+>
+> Jika `data-train/` sudah disalin (mis. dari Google Drive), cukup jalankan
+> `python scripts/prepare_data.py`. Error `mask tidak ditemukan` berarti
+> langkah ini belum dijalankan.
+
 ### 2. Siapkan test resmi
 
 ```bash
