@@ -34,6 +34,7 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--device", default=None, help="auto | cpu | cuda")
     parser.add_argument("--epochs", type=int, default=None)
     parser.add_argument("--batch-size", type=int, default=None)
+    parser.add_argument("--base-channels", type=int, default=None)
     parser.add_argument("--lr", type=float, default=None)
     parser.add_argument("--seed", type=int, default=None)
     parser.add_argument("--no-amp", action="store_true")
@@ -58,6 +59,8 @@ def main() -> None:
         config["training"]["epochs"] = args.epochs
     if args.batch_size is not None:
         config["training"]["batch_size"] = args.batch_size
+    if args.base_channels is not None:
+        config["model"]["base_channels"] = args.base_channels
     if args.lr is not None:
         config["training"]["learning_rate"] = args.lr
     if args.no_amp:
@@ -96,11 +99,19 @@ def main() -> None:
         val_rows = val_rows[: args.max_samples]
 
     device = choose_device(args.device)
-    if device.type != "cuda":
+    if device.type == "cuda":
+        amp_status = "aktif" if config["training"]["amp"] else "nonaktif"
+        print(f"Device: CUDA ({torch.cuda.get_device_name(device)}) | AMP: {amp_status}")
+    else:
         config["training"]["amp"] = False
         if args.device not in {None, "auto", "cpu"}:
             print("Peringatan: CUDA tidak tersedia, memakai CPU.")
         print("Device: CPU (AMP dinonaktifkan)")
+        if not args.smoke_test:
+            print(
+                "Tip: config default dioptimalkan untuk GPU. Di CPU gunakan "
+                "--smoke-test atau turunkan --batch-size."
+            )
 
     data_cfg = config["data"]
     mean = (

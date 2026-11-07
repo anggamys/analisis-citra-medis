@@ -17,6 +17,7 @@ paths:
 data:
   image_size: 256
   val_ratio: 0.15
+  # Colab standar punya ~2 vCPU. Naikkan jika CPU lebih banyak.
   num_workers: 2
   pin_memory: true
   normalize_mean: [0.5, 0.5, 0.5]
@@ -26,22 +27,24 @@ model:
   architecture: unet
   in_channels: 3
   out_channels: 1
-  base_channels: 32   # naikkan ke 64 jika training di GPU >= 8 GB
+  # Default GPU (T4 16 GB / L4 24 GB). Turunkan ke 32 untuk CPU
+  # atau GPU dengan VRAM < 8 GB.
+  base_channels: 64
   depth: 4
   bilinear: false
   dropout: 0.0
 
 training:
-  epochs: 50
-  batch_size: 4
-  learning_rate: 0.001
+  epochs: 100
+  batch_size: 16       # muat di T4 16 GB dengan AMP
+  learning_rate: 0.0005
   weight_decay: 0.0001
-  amp: true
-  grad_clip: 0.0
-  scheduler: plateau  # plateau | cosine | none
+  amp: true             # otomatis nonaktif saat device CPU
+  grad_clip: 1.0
+  scheduler: plateau    # plateau | cosine | none
   scheduler_factor: 0.5
-  scheduler_patience: 3
-  early_stopping_patience: 10
+  scheduler_patience: 4
+  early_stopping_patience: 15
   min_delta: 0.0001
   threshold: 0.5
 
@@ -51,7 +54,7 @@ loss:
   bce_pos_weight: 1.0
 
 evaluation:
-  batch_size: 8
+  batch_size: 16
   threshold_candidates: [0.30, 0.35, 0.40, 0.45, 0.50, 0.55, 0.60, 0.65, 0.70]
   num_visualizations: 8
   num_failure_cases: 8

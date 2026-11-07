@@ -70,6 +70,11 @@ Catatan: instalasi dependensi tidak dilakukan otomatis oleh repo ini. Untuk
 GPU NVIDIA, lewati langkah CPU-only dan install PyTorch sesuai versi CUDA dari
 situs resmi PyTorch agar build yang terpasang sesuai perangkat.
 
+Di Colab/Kaggle, PyTorch bawaan sudah memakai CUDA. **Jangan** menjalankan
+perintah `--index-url .../cpu` di sana karena akan mengganti torch CUDA dengan
+build CPU. Cukup jalankan `pip install -r requirements.txt`; torch yang sudah
+ada akan dipakai ulang.
+
 ## Alur penggunaan
 
 ### 1. Siapkan train/validation
@@ -102,15 +107,20 @@ dan menulis:
 
 ### 3. Training
 
+Default `configs/config.yaml` dioptimalkan untuk GPU (Colab T4/L4): U-Net
+`base_channels: 64`, `batch_size: 16`, AMP aktif, 100 epoch dengan early
+stopping. Device dipilih otomatis (`cuda` jika tersedia).
+
 ```bash
+# Di Colab/GPU: langsung jalankan
 python scripts/train.py --config configs/config.yaml
-```
 
-Smoke test cepat (8 sampel, 1 epoch):
-
-```bash
+# Di laptop CPU: cukup smoke test, atau turunkan batch size
 python scripts/train.py --smoke-test
+python scripts/train.py --device cpu --batch-size 2 --base-channels 32 --epochs 5
 ```
+
+Smoke test menjalankan 1 epoch pada 8 sampel dan otomatis memakai batch size 2.
 
 Resume:
 
@@ -147,9 +157,11 @@ prediksi tidak membutuhkan label. Untuk metrik resmi, gunakan
 
 ## Konfigurasi
 
-Semua parameter utama ada di `configs/config.yaml`. Default diset konservatif
-untuk GPU kecil: `base_channels: 32`, `batch_size: 4`, `image_size: 256`, AMP
-aktif. Naikkan `base_channels` ke 64 dan batch size jika memakai GPU >= 8 GB.
+Semua parameter utama ada di `configs/config.yaml`. Default dioptimalkan untuk
+GPU Colab (T4 16 GB / L4 24 GB): `base_channels: 64`, `batch_size: 16`,
+`image_size: 256`, AMP aktif, dan `num_workers: 2`. Jika VRAM terbatas atau
+memakai CPU, turunkan `base_channels` ke 32 dan/atau `batch_size` lewat CLI
+(`--base-channels 32 --batch-size 2`).
 
 Preprocessing citra:
 
@@ -204,8 +216,8 @@ edge case, dan bentuk tensor Dataset.
 
 ## Catatan hardware
 
-GPU lokal MX110 (2 GB VRAM) dan RAM 3,7 GB sangat terbatas untuk training
-penuh. Untuk eksperimen serius, gunakan Colab/Kaggle atau GPU dengan VRAM
-
-> = 8 GB. Konfigurasi default sudah dibuat cukup kecil agar bisa diuji, tetapi
-> training 50 epoch di GPU tersebut belum tentu muat.
+Laptop pengembangan memakai PyTorch CPU karena GPU lokal (MX110, 2 GB VRAM)
+tidak memadai untuk training penuh. Konfigurasi default ditujukan untuk
+Colab/Kaggle GPU (T4 16 GB atau lebih), dengan AMP dan batch size 16. Di CPU,
+gunakan smoke test atau turunkan batch size; estimasi waktu training penuh di
+CPU bisa sangat lama.
