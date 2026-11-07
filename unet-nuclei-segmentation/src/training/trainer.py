@@ -59,7 +59,10 @@ class Trainer:
         self.patience = int(training_cfg.get("early_stopping_patience", 10))
 
         self.use_amp = bool(training_cfg.get("amp", False)) and device.type == "cuda"
-        self.scaler = torch.cuda.amp.GradScaler(enabled=self.use_amp)
+        if hasattr(torch.amp, "GradScaler"):
+            self.scaler = torch.amp.GradScaler("cuda", enabled=self.use_amp)
+        else:  # torch < 2.3
+            self.scaler = torch.cuda.amp.GradScaler(enabled=self.use_amp)
 
         self.checkpoint_dir = self.experiment_dir / "checkpoints"
         self.best_checkpoint = self.checkpoint_dir / "best.pt"
@@ -75,6 +78,8 @@ class Trainer:
 
     def _autocast(self):
         if self.use_amp:
+            if hasattr(torch.amp, "autocast"):
+                return torch.amp.autocast("cuda", enabled=True)
             return torch.cuda.amp.autocast(enabled=True)
         return nullcontext()
 

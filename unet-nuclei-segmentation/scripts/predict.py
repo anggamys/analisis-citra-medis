@@ -3,7 +3,13 @@
 from __future__ import annotations
 
 import argparse
+import sys
+from pathlib import Path
 from typing import cast
+
+PROJECT_ROOT = Path(__file__).resolve().parents[1]
+if str(PROJECT_ROOT) not in sys.path:
+    sys.path.insert(0, str(PROJECT_ROOT))
 
 import cv2
 import numpy as np
@@ -122,7 +128,11 @@ def main() -> None:
         for batch in tqdm(loader, desc=f"Prediksi {split_name}"):
             images = batch["image"].to(device, non_blocking=True)
             if use_amp:
-                with torch.cuda.amp.autocast(enabled=True):
+                if hasattr(torch.amp, "autocast"):
+                    autocast = torch.amp.autocast("cuda", enabled=True)
+                else:  # torch < 2.3
+                    autocast = torch.cuda.amp.autocast(enabled=True)
+                with autocast:
                     logits = model(images)
             else:
                 logits = model(images)

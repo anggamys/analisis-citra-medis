@@ -52,17 +52,23 @@ konsisten dan mudah diulang.
 
 ## Setup
 
-Disarankan memakai Python 3.12 dan virtual environment terpisah:
+Disarankan memakai Python 3.12+ dan virtual environment terpisah. Setup ini
+sudah diuji dengan Python 3.14.10 dan PyTorch CPU:
 
 ```bash
-python3.12 -m venv .venv
+python3 -m venv .venv
 source .venv/bin/activate
+
+# CPU-only (tanpa CUDA), jauh lebih ringan:
+pip install torch --index-url https://download.pytorch.org/whl/cpu
+
+# Dependensi lain (torch yang sudah terpasang akan dipakai ulang):
 pip install -r requirements.txt
 ```
 
 Catatan: instalasi dependensi tidak dilakukan otomatis oleh repo ini. Untuk
-GPU NVIDIA, install PyTorch sesuai versi CUDA dari situs resmi PyTorch agar
-tidak terpasang build CPU.
+GPU NVIDIA, lewati langkah CPU-only dan install PyTorch sesuai versi CUDA dari
+situs resmi PyTorch agar build yang terpasang sesuai perangkat.
 
 ## Alur penggunaan
 

@@ -18,6 +18,8 @@ from src.utils.io import save_json
 
 def _autocast(enabled: bool):
     if enabled:
+        if hasattr(torch.amp, "autocast"):
+            return torch.amp.autocast("cuda", enabled=True)
         return torch.cuda.amp.autocast(enabled=True)
     return nullcontext()
 
