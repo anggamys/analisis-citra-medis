@@ -105,9 +105,7 @@ def main() -> None:
         else splits_dir / "train.csv"
     )
     val_csv = (
-        resolve_path(args.val_manifest)
-        if args.val_manifest
-        else splits_dir / "val.csv"
+        resolve_path(args.val_manifest) if args.val_manifest else splits_dir / "val.csv"
     )
     missing = [path for path in (train_csv, val_csv) if not path.is_file()]
     if missing:
@@ -129,7 +127,9 @@ def main() -> None:
     device = choose_device(args.device)
     if device.type == "cuda":
         amp_status = "aktif" if config["training"]["amp"] else "nonaktif"
-        print(f"Device: CUDA ({torch.cuda.get_device_name(device)}) | AMP: {amp_status}")
+        print(
+            f"Device: CUDA ({torch.cuda.get_device_name(device)}) | AMP: {amp_status}"
+        )
     else:
         config["training"]["amp"] = False
         if args.device not in {None, "auto", "cpu"}:

@@ -60,9 +60,7 @@ def relative_path(path: Path) -> str:
 
 def has_raw_images(raw_dir: Path) -> bool:
     return raw_dir.is_dir() and any(
-        (folder / "images").is_dir()
-        for folder in raw_dir.iterdir()
-        if folder.is_dir()
+        (folder / "images").is_dir() for folder in raw_dir.iterdir() if folder.is_dir()
     )
 
 
@@ -336,7 +334,7 @@ def main() -> None:
     reports: dict[str, Any] = {}
 
     for name in stages:
-        rows, report = process_stage(
+        _, report = process_stage(
             name,
             config,
             download=args.download,
