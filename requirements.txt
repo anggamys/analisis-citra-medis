@@ -2,3 +2,13 @@ opencv-python-headless>=4.9.0
 numpy>=1.24.0
 matplotlib>=3.7.0
 scikit-image>=0.22.0
+
+# unet-nuclei-segmentation (Soal 4)
+torch>=2.15.0
+pyyaml>=6.0
+albumentations>=2.0.0
+tqdm>=4.66.0
+pytest>=8.0
+
+# catatan: torch di-install versi CPU via:
+# pip install torch --index-url https://download.pytorch.org/whl/cpu

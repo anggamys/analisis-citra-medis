@@ -36,12 +36,12 @@ model:
 
 training:
   epochs: 100
-  batch_size: 16       # muat di T4 16 GB dengan AMP
+  batch_size: 16 # muat di T4 16 GB dengan AMP
   learning_rate: 0.0005
   weight_decay: 0.0001
-  amp: true             # otomatis nonaktif saat device CPU
+  amp: true # otomatis nonaktif saat device CPU
   grad_clip: 1.0
-  scheduler: plateau    # plateau | cosine | none
+  scheduler: plateau # plateau | cosine | none
   scheduler_factor: 0.5
   scheduler_patience: 4
   early_stopping_patience: 15
