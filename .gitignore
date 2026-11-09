@@ -16,3 +16,4 @@ output
 # pengecualian: screenshot dokumentasi laporan
 !segmentation/docs/img/*.png
 !preprocessing-image/docs/img/*.png
+!unet-nuclei-segmentation/docs/img/*.png
