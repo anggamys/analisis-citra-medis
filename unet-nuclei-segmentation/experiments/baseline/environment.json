@@ -1,0 +1,9 @@
+{
+  "python": "3.13.16 (main, Oct  1 2026, 15:40:24) [GCC 13.3.0]",
+  "platform": "Linux-6.6.159+-x86_64-with-glibc2.39",
+  "torch": "2.14.1+cu130",
+  "cuda_available": true,
+  "cuda_version": "13.0",
+  "gpu": "Tesla T4",
+  "git_commit": "802fb5f2ad547481de25e870ef76f3bc6b551f74"
+}

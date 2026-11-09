@@ -4,6 +4,7 @@ data-test/
 data-test-large/
 data/raw/
 data/processed/
+*.zip
 
 # Artefak eksperimen
 experiments/*/checkpoints/
